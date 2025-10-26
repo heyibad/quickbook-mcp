@@ -104,7 +104,7 @@ export async function createQuickbooksInvoice(
             return {
                 result: null,
                 isError: true,
-                error: response.error || "Failed to create invoice",
+                error: response.error || "Failed to create invoice. Please check your invoice data and customer/item references.",
             };
         }
 
@@ -117,6 +117,6 @@ export async function createQuickbooksInvoice(
             error: null,
         };
     } catch (error) {
-        return { result: null, isError: true, error: formatError(error) };
+        return { result: null, isError: true, error: formatError(error, "create invoice") };
     }
 }

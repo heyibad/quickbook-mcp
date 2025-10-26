@@ -63,7 +63,7 @@ export async function createQuickbooksCustomer(
         return {
             result: null,
             isError: true,
-            error: formatError(error),
+            error: formatError(error, "create customer"),
         };
     }
 }

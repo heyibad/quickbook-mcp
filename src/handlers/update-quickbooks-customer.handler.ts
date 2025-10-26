@@ -56,7 +56,7 @@ export async function updateQuickbooksCustomer(customerData: any): Promise<ToolR
     return {
       result: null,
       isError: true,
-      error: formatError(error),
+      error: formatError(error, "update customer"),
     };
 }
 }

@@ -31,7 +31,7 @@ export async function createQuickbooksVendor(vendor: any): Promise<ToolResponse<
       return {
         result: null,
         isError: true,
-        error: response.error || "Failed to create vendor"
+        error: response.error || "Failed to create vendor. Please verify the vendor data is correct."
       };
     }
 
@@ -44,7 +44,7 @@ export async function createQuickbooksVendor(vendor: any): Promise<ToolResponse<
     return {
       result: null,
       isError: true,
-      error: formatError(error),
+      error: formatError(error, "create vendor"),
     };
 }
 }
