@@ -27,7 +27,7 @@ QUICKBOOKS_ENVIRONMENT=sandbox
    - Go to the [Intuit Developer Portal](https://developer.intuit.com/)
    - Create a new app or select an existing one
    - Get the Client ID and Client Secret from the app's keys section
-   - Add `http://localhost:8000/callback` to the app's Redirect URIs
+   - Add `http://localhost:3000/callback` to the app's Redirect URIs
 
 ## Authentication
 
