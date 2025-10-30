@@ -1,20 +1,36 @@
-import {
-    makeQuickBooksRequest,
-    queryQuickBooks,
-    extractAccessToken,
-} from "../helpers/quickbooks-api.js";
+import { makeQuickBooksRequest, extractAccessToken } from "../helpers/quickbooks-api.js";
 import { getRequestHeaders } from "../helpers/request-context.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
+import { customerSchema } from "../schemas/customer.schema.js";
 
 /**
  * Create a customer in QuickBooks Online
  * @param customerData The customer object to create
  */
 export async function createQuickbooksCustomer(
-    customerData: any
+    customerData: unknown
 ): Promise<ToolResponse<any>> {
     try {
+        const validation = customerSchema.safeParse(customerData);
+
+        if (!validation.success) {
+            const message = validation.error.errors
+                .map((error) => {
+                    const path = error.path.length ? error.path.join(".") : "customer";
+                    return `${path}: ${error.message}`;
+                })
+                .join("; ");
+
+            return {
+                result: null,
+                isError: true,
+                error: `Invalid customer data provided: ${message}`,
+            };
+        }
+
+        const normalizedCustomer = validation.data;
+
         // Get access token from request headers
         const headers = getRequestHeaders();
         const accessToken = extractAccessToken(headers);
@@ -31,7 +47,7 @@ export async function createQuickbooksCustomer(
         const response = await makeQuickBooksRequest({
             method: "POST",
             endpoint: "/customer",
-            body: customerData,
+            body: normalizedCustomer,
             accessToken,
         });
 

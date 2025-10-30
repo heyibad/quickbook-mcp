@@ -1,6 +1,7 @@
 import { createQuickbooksCustomer } from "../handlers/create-quickbooks-customer.handler.js";
 import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
+import { customerSchema } from "../schemas/customer.schema.js";
 
 // Define the tool metadata
 const toolName = "create_customer";
@@ -9,7 +10,7 @@ const toolDescription = "Create a customer in QuickBooks Online.";
 
 // Define the expected input schema for creating a customer
 const inputSchema = {
-  customer: z.any(),
+  customer: customerSchema,
 };
 
 const outputSchema = {
@@ -46,4 +47,4 @@ export const CreateCustomerTool: ToolDefinition<typeof inputSchema, typeof outpu
   inputSchema: inputSchema,
   outputSchema: outputSchema,
   handler: toolHandler,
-}; 
+};
