@@ -43,8 +43,8 @@ const toolHandler = async (
     };
     return {
         content: [
-            { 
-                type: "text" as const, 
+            {
+                type: "text" as const,
                 text: `Customer retrieved successfully: ${JSON.stringify(response.result, null, 2)}`,
             },
         ],

@@ -1,4 +1,7 @@
-import { makeQuickBooksRequest, queryQuickBooks } from "../helpers/quickbooks-api.js";
+import {
+    makeQuickBooksRequest,
+    queryQuickBooks,
+} from "../helpers/quickbooks-api.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 import { getQuickBooksCredentials } from "../helpers/request-context.js";

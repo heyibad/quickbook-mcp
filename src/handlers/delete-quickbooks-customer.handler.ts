@@ -24,7 +24,7 @@ export async function deleteQuickbooksCustomer(
                 method: "GET",
                 endpoint: `/customer/${idOrEntity}`,
                 accessToken,
-            realmId,
+                realmId,
             });
 
             if (getResponse.isError) {
@@ -58,7 +58,7 @@ export async function deleteQuickbooksCustomer(
                 method: "GET",
                 endpoint: `/customer/${customerId}`,
                 accessToken,
-            realmId,
+                realmId,
             });
 
             if (getResponse.isError) {
@@ -85,7 +85,7 @@ export async function deleteQuickbooksCustomer(
                 endpoint: "/customer",
                 body: inactivePayload,
                 accessToken,
-            realmId,
+                realmId,
             });
 
             if (updateResponse.isError) {

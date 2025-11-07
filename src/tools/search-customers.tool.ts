@@ -4,125 +4,146 @@ import { z } from "zod";
 
 const toolName = "search_customers";
 const toolTitle = "Search Customers";
-const toolDescription = "Search customers in QuickBooks Online that match given criteria.";
+const toolDescription =
+    "Search customers in QuickBooks Online that match given criteria.";
 
 // Common Customer entity fields that are filterable. Not exhaustive – any
 // property present on the QuickBooks Customer object is valid.
-const customerFieldEnum = z.enum([
-  "Id",
-  "DisplayName",
-  "GivenName",
-  "FamilyName",
-  "CompanyName",
-  "PrimaryEmailAddr",
-  "PrimaryPhone",
-  "Balance",
-  "Active",
-  "MetaData.CreateTime",
-  "MetaData.LastUpdatedTime",
-]).describe(
-  "Field to filter on – must be a property of the QuickBooks Online Customer entity."
-);
+const customerFieldEnum = z
+    .enum([
+        "Id",
+        "DisplayName",
+        "GivenName",
+        "FamilyName",
+        "CompanyName",
+        "PrimaryEmailAddr",
+        "PrimaryPhone",
+        "Balance",
+        "Active",
+        "MetaData.CreateTime",
+        "MetaData.LastUpdatedTime",
+    ])
+    .describe(
+        "Field to filter on – must be a property of the QuickBooks Online Customer entity."
+    );
 
 const criterionSchema = z.object({
-  key: z.string().describe("Simple key (legacy) – any Customer property name."),
-  value: z.union([z.string(), z.boolean()]),
+    key: z
+        .string()
+        .describe("Simple key (legacy) – any Customer property name."),
+    value: z.union([z.string(), z.boolean()]),
 });
 
 const advancedCriterionSchema = z.object({
-  field: customerFieldEnum,
-  value: z.union([z.string(), z.boolean()]),
-  operator: z.enum(["=", "<", ">", "<=", ">=", "LIKE", "IN"]).optional(),
+    field: customerFieldEnum,
+    value: z.union([z.string(), z.boolean()]),
+    operator: z.enum(["=", "<", ">", "<=", ">=", "LIKE", "IN"]).optional(),
 });
 
 const inputSchema = {
-  // Criteria can be passed as list of key/value/operator triples (array form)
-  // or omitted for unfiltered search.
-  criteria: z
-    .array(advancedCriterionSchema.or(criterionSchema))
-    .optional()
-    .describe(
-      "Filters to apply. Use the advanced form {field,value,operator?} for operators or the simple {key,value} pairs."
-    ),
+    // Criteria can be passed as list of key/value/operator triples (array form)
+    // or omitted for unfiltered search.
+    criteria: z
+        .array(advancedCriterionSchema.or(criterionSchema))
+        .optional()
+        .describe(
+            "Filters to apply. Use the advanced form {field,value,operator?} for operators or the simple {key,value} pairs."
+        ),
 
-  // Pagination / sorting / count
-  limit: z.number().optional(),
-  offset: z.number().optional(),
-  asc: z.string().optional(),
-  desc: z.string().optional(),
-  fetchAll: z.boolean().optional(),
-  count: z.boolean().optional(),
+    // Pagination / sorting / count
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+    asc: z.string().optional(),
+    desc: z.string().optional(),
+    fetchAll: z.boolean().optional(),
+    count: z.boolean().optional(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
 
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const { criteria = [], ...options } = (params ?? {}) ;
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const { criteria = [], ...options } = params ?? {};
 
-  // Build criteria to send to SDK. If user provided the advanced array with field/operator/value
-  // we pass it straight through. Otherwise we transform legacy {key,value} pairs to object.
-  let criteriaToSend: any;
-  if (Array.isArray(criteria) && criteria.length > 0) {
-    const first = criteria[0] as any;
-    if (typeof first === "object" && "field" in first) {
-      criteriaToSend = [...criteria, ...Object.entries(options).map(([key, value]) => ({ field: key, value }))];
-    } else {
-      // original simple key/value list → map
-      criteriaToSend = (criteria as Array<{ key: string; value: any }>).reduce<Record<string, any>>((acc, { key, value }) => {
-        if (value !== undefined && value !== null) acc[key] = value;
-        return acc;
-      }, { ...options });
-    }
-  } else {
-    criteriaToSend = { ...options };
-  }
-
-  const response = await searchQuickbooksCustomers(criteriaToSend);
-  if (response.isError) {
-    const output = {
-      success: false,
-      error: response.error || "Unknown error occurred",
-    };
-    return {
-      content: [
-        { 
-          type: "text" as const, 
-          text: `Error searching customers: ${response.error}`,
+    // Build criteria to send to SDK. If user provided the advanced array with field/operator/value
+    // we pass it straight through. Otherwise we transform legacy {key,value} pairs to object.
+    let criteriaToSend: any;
+    if (Array.isArray(criteria) && criteria.length > 0) {
+        const first = criteria[0] as any;
+        if (typeof first === "object" && "field" in first) {
+            criteriaToSend = [
+                ...criteria,
+                ...Object.entries(options).map(([key, value]) => ({
+                    field: key,
+                    value,
+                })),
+            ];
+        } else {
+            // original simple key/value list → map
+            criteriaToSend = (
+                criteria as Array<{ key: string; value: any }>
+            ).reduce<Record<string, any>>(
+                (acc, { key, value }) => {
+                    if (value !== undefined && value !== null) acc[key] = value;
+                    return acc;
+                },
+                { ...options }
+            );
         }
-      ],
-      structuredContent: output,
+    } else {
+        criteriaToSend = { ...options };
+    }
+
+    const response = await searchQuickbooksCustomers(criteriaToSend);
+    if (response.isError) {
+        const output = {
+            success: false,
+            error: response.error || "Unknown error occurred",
+        };
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error searching customers: ${response.error}`,
+                },
+            ],
+            structuredContent: output,
+        };
+    }
+
+    const output = {
+        success: true,
+        data: response.result,
     };
-  }
-  
-  const output = {
-    success: true,
-    data: response.result,
-  };
-  
-  const resultText = Array.isArray(response.result) 
-    ? `Found ${response.result.length} customers` 
-    : `Count: ${response.result}`;
-    
-  return {
-    content: [
-      { 
-        type: "text" as const, 
-        text: `${resultText}\n${JSON.stringify(response.result, null, 2)}`,
-      },
-    ],
-    structuredContent: output,
-  };
+
+    const resultText = Array.isArray(response.result)
+        ? `Found ${response.result.length} customers`
+        : `Count: ${response.result}`;
+
+    return {
+        content: [
+            {
+                type: "text" as const,
+                text: `${resultText}\n${JSON.stringify(response.result, null, 2)}`,
+            },
+        ],
+        structuredContent: output,
+    };
 };
 
-export const SearchCustomersTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const SearchCustomersTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

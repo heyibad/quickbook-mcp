@@ -30,7 +30,7 @@ const toolHandler = async (
                     structured: {
                         success: false,
                         error: response.error || "Unknown error occurred",
-                    }
+                    },
                 },
             ],
         };
@@ -38,13 +38,13 @@ const toolHandler = async (
 
     return {
         content: [
-            { 
-                type: "text" as const, 
+            {
+                type: "text" as const,
                 text: `Customer updated successfully: ${JSON.stringify(response.result, null, 2)}`,
                 structured: {
                     success: true,
                     customer: response.result,
-                }
+                },
             },
         ],
     };

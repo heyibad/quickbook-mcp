@@ -25,6 +25,7 @@ npx ts-node test-all-tools.ts <ACCESS_TOKEN> <REALM_ID>
 ```
 
 Example:
+
 ```bash
 npx ts-node test-all-tools.ts "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..." "9341453159261958"
 ```
@@ -38,6 +39,7 @@ npx ts-node test-all-tools.ts
 ```
 
 Or on Windows PowerShell:
+
 ```powershell
 $env:QUICKBOOKS_ACCESS_TOKEN="your_access_token_here"
 $env:QUICKBOOKS_REALM_ID="your_realm_id_here"
@@ -85,11 +87,12 @@ Total Tests: 35
 
 - **✅ PASS**: Tool executed successfully with valid response
 - **❌ FAIL**: Tool encountered an error (shows error message)
-- **⏭️  SKIP**: Test skipped due to missing prerequisite data (e.g., no invoices exist)
+- **⏭️ SKIP**: Test skipped due to missing prerequisite data (e.g., no invoices exist)
 
 ### What Gets Tested
 
 #### Search Operations (11 tools)
+
 - search-quickbooks-accounts
 - search-quickbooks-bills
 - search-quickbooks-bill-payments
@@ -103,6 +106,7 @@ Total Tests: 35
 - search-quickbooks-vendors
 
 #### GET Operations (6 tools)
+
 - get-quickbooks-bill
 - get-quickbooks-bill-payment
 - get-quickbooks-estimate
@@ -111,10 +115,12 @@ Total Tests: 35
 - get-quickbooks-vendor
 
 #### READ Operations (2 tools)
+
 - read-quickbooks-invoice
 - read-quickbooks-item
 
 #### UPDATE Operations (11 tools)
+
 - update-quickbooks-account
 - update-quickbooks-bill
 - update-quickbooks-bill-payment
@@ -128,6 +134,7 @@ Total Tests: 35
 - update-quickbooks-vendor
 
 #### CREATE Operations (11 tools)
+
 - create-quickbooks-account
 - create-quickbooks-bill
 - create-quickbooks-bill-payment
@@ -141,18 +148,23 @@ Total Tests: 35
 - create-quickbooks-vendor
 
 #### DELETE Operations (7 tools)
+
 Note: DELETE operations are not tested by default to avoid data loss. They can be tested separately if needed.
 
 ### Getting QuickBooks Credentials
 
 #### Access Token
+
 You need a valid OAuth 2.0 access token from QuickBooks. You can obtain this by:
+
 1. Setting up OAuth 2.0 in QuickBooks Developer Portal
 2. Using the OAuth Playground
 3. Implementing OAuth flow in your application
 
 #### Realm ID
+
 The Realm ID is your QuickBooks Company ID. You can find it:
+
 1. In the QuickBooks Online URL after logging in
 2. From the OAuth response during authentication
 3. In your QuickBooks Developer Dashboard
@@ -162,7 +174,7 @@ The Realm ID is your QuickBooks Company ID. You can find it:
 The test suite is designed to be **mostly non-destructive**:
 
 - **Search operations**: Read-only, no data changes
-- **GET/READ operations**: Read-only, no data changes  
+- **GET/READ operations**: Read-only, no data changes
 - **UPDATE operations**: Only adds test notes to existing entities
 - **CREATE operations**: Creates new test entities (prefixed with "Test")
 
@@ -176,17 +188,22 @@ The test suite is designed to be **mostly non-destructive**:
 ### Troubleshooting
 
 #### "Missing credentials" error
+
 Make sure you provide both ACCESS_TOKEN and REALM_ID via command line or environment variables.
 
 #### "Authentication failed" errors
+
 - Check that your access token is valid and not expired
 - Verify the Realm ID matches your QuickBooks company
 
 #### Many "SKIP" results
+
 This is normal if your QuickBooks company has limited data. The tests will skip operations that require data that doesn't exist.
 
 #### "FAIL" results
+
 Check the error message in the output. Common issues:
+
 - Expired access token
 - Insufficient permissions
 - QuickBooks API rate limits
@@ -195,6 +212,7 @@ Check the error message in the output. Common issues:
 ### Advanced Usage
 
 You can modify the test script to:
+
 - Test specific tools only
 - Adjust the limit of entities fetched (default: 10)
 - Add DELETE operation tests
@@ -219,16 +237,17 @@ Add to your CI/CD pipeline:
 # Example GitHub Actions
 - name: Test QuickBooks Tools
   env:
-    QUICKBOOKS_ACCESS_TOKEN: ${{ secrets.QB_ACCESS_TOKEN }}
-    QUICKBOOKS_REALM_ID: ${{ secrets.QB_REALM_ID }}
+      QUICKBOOKS_ACCESS_TOKEN: ${{ secrets.QB_ACCESS_TOKEN }}
+      QUICKBOOKS_REALM_ID: ${{ secrets.QB_REALM_ID }}
   run: |
-    npm run build
-    npx ts-node test-all-tools.ts
+      npm run build
+      npx ts-node test-all-tools.ts
 ```
 
 ### Performance Benchmarking
 
 The test script reports execution time for each tool, helping you:
+
 - Identify slow operations
 - Monitor API performance
 - Optimize tool implementations

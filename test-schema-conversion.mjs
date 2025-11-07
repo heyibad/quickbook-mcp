@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 const outputSchema = {
     success: z.boolean().describe("Whether the operation was successful"),
@@ -8,9 +8,9 @@ const outputSchema = {
     error: z.string().optional().describe("Error message if operation failed"),
 };
 
-console.log('Zod Schema Object:');
+console.log("Zod Schema Object:");
 console.log(JSON.stringify(outputSchema, null, 2));
 
-console.log('\n\nConverted to JSON Schema:');
+console.log("\n\nConverted to JSON Schema:");
 const jsonSchema = zodToJsonSchema(z.object(outputSchema));
 console.log(JSON.stringify(jsonSchema, null, 2));

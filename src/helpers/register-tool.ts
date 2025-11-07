@@ -15,36 +15,34 @@ export function RegisterTool<
         description: toolDefinition.description,
         inputSchema: toolDefinition.inputSchema,
     };
-    
+
     // Only include outputSchema if it's defined
     if (toolDefinition.outputSchema) {
         config.outputSchema = toolDefinition.outputSchema;
-        
+
         // Wrap the handler to ensure structuredContent is always returned
         const originalHandler = toolDefinition.handler;
         const wrappedHandler = async (params: any) => {
             const result = await originalHandler(params);
-            
+
             // Log for debugging
             console.error(`[${toolDefinition.name}] Handler returned:`, {
-                hasStructuredContent: 'structuredContent' in result,
-                hasContent: 'content' in result,
-                structuredContent: result.structuredContent
+                hasStructuredContent: "structuredContent" in result,
+                hasContent: "content" in result,
+                structuredContent: result.structuredContent,
             });
-            
+
             // Ensure structuredContent exists when outputSchema is defined
             if (!result.structuredContent) {
-                console.error(`[${toolDefinition.name}] WARNING: outputSchema defined but no structuredContent returned!`);
+                console.error(
+                    `[${toolDefinition.name}] WARNING: outputSchema defined but no structuredContent returned!`
+                );
             }
-            
+
             return result;
         };
-        
-        server.registerTool(
-            toolDefinition.name,
-            config,
-            wrappedHandler as any
-        );
+
+        server.registerTool(toolDefinition.name, config, wrappedHandler as any);
     } else {
         server.registerTool(
             toolDefinition.name,

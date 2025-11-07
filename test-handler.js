@@ -1,4 +1,4 @@
-import { GetCustomerTool } from './dist/tools/get-customer.tool.js';
+import { GetCustomerTool } from "./dist/tools/get-customer.tool.js";
 
 async function testHandler() {
     try {
@@ -6,7 +6,7 @@ async function testHandler() {
         const result = await GetCustomerTool.handler({ id: "test-123" });
         console.log("Handler result:");
         console.log(JSON.stringify(result, null, 2));
-        console.log("\nHas structuredContent:", 'structuredContent' in result);
+        console.log("\nHas structuredContent:", "structuredContent" in result);
         console.log("structuredContent value:", result.structuredContent);
     } catch (error) {
         console.error("Error:", error.message);
