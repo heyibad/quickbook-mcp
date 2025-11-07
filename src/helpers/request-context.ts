@@ -64,3 +64,78 @@ export function getRequestHeaders(): Record<
 export function tryGetRequestContext(): RequestContext | undefined {
     return requestContext.getStore();
 }
+
+/**
+ * Extract access token from request headers
+ * Supports both "Authorization: Bearer <token>" and "X-Access-Token: <token>" formats
+ *
+ * @returns Access token string or null if not found
+ */
+export function getAccessToken(): string | null {
+    const headers = getRequestHeaders();
+    
+    // Try Authorization header first (Bearer token)
+    const authHeader = headers.authorization || headers.Authorization;
+    if (authHeader) {
+        const bearerMatch = String(authHeader).match(/^Bearer\s+(.+)$/i);
+        if (bearerMatch) {
+            return bearerMatch[1];
+        }
+    }
+    
+    // Try X-Access-Token header
+    const tokenHeader = headers['x-access-token'] || headers['X-Access-Token'];
+    if (tokenHeader) {
+        return String(tokenHeader);
+    }
+    
+    return null;
+}
+
+/**
+ * Extract QuickBooks Realm ID from request headers
+ * Supports "X-Realm-Id" or "X-QuickBooks-Realm-Id" headers
+ *
+ * @returns Realm ID string or null if not found
+ */
+export function getRealmId(): string | null {
+    const headers = getRequestHeaders();
+    
+    // Try various header formats
+    const realmId = 
+        headers['x-realm-id'] || 
+        headers['X-Realm-Id'] ||
+        headers['x-quickbooks-realm-id'] ||
+        headers['X-QuickBooks-Realm-Id'];
+    
+    if (realmId) {
+        return String(realmId);
+    }
+    
+    return null;
+}
+
+/**
+ * Get QuickBooks credentials from request headers
+ * 
+ * @returns Object with accessToken and realmId
+ * @throws Error if required credentials are missing
+ */
+export function getQuickBooksCredentials(): { accessToken: string; realmId: string } {
+    const accessToken = getAccessToken();
+    const realmId = getRealmId();
+    
+    if (!accessToken) {
+        throw new Error(
+            "Missing access token. Please provide via 'Authorization: Bearer <token>' or 'X-Access-Token' header."
+        );
+    }
+    
+    if (!realmId) {
+        throw new Error(
+            "Missing QuickBooks Realm ID. Please provide via 'X-Realm-Id' or 'X-QuickBooks-Realm-Id' header."
+        );
+    }
+    
+    return { accessToken, realmId };
+}

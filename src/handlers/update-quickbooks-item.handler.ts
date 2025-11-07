@@ -1,11 +1,7 @@
-import {
-    makeQuickBooksRequest,
-    queryQuickBooks,
-    extractAccessToken,
-} from "../helpers/quickbooks-api.js";
-import { getRequestHeaders } from "../helpers/request-context.js";
+import { makeQuickBooksRequest, queryQuickBooks } from "../helpers/quickbooks-api.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
+import { getQuickBooksCredentials } from "../helpers/request-context.js";
 
 export interface UpdateItemInput {
     item_id: string;
@@ -17,23 +13,14 @@ export async function updateQuickbooksItem({
     patch,
 }: UpdateItemInput): Promise<ToolResponse<any>> {
     try {
-        // Get access token from request headers
-        const headers = getRequestHeaders();
-        const accessToken = extractAccessToken(headers);
-
-        if (!accessToken) {
-            return {
-                result: null,
-                isError: true,
-                error: "Missing Authorization header. Please provide: Authorization: Bearer <access_token>",
-            };
-        }
+        const { accessToken, realmId } = getQuickBooksCredentials();
 
         // Need SyncToken; fetch existing item first
         const existingResponse = await makeQuickBooksRequest({
             method: "GET",
             endpoint: `/item/${item_id}`,
             accessToken,
+            realmId,
         });
 
         if (existingResponse.isError) {
@@ -54,6 +41,7 @@ export async function updateQuickbooksItem({
             endpoint: "/item",
             body: payload,
             accessToken,
+            realmId,
         });
 
         if (response.isError) {

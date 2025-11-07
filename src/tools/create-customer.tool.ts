@@ -24,18 +24,33 @@ const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => 
   const response = await createQuickbooksCustomer(params.customer);
 
   if (response.isError) {
+    const output = {
+      success: false,
+      error: response.error || "Unknown error",
+    };
     return {
       content: [
-        { type: "text" as const, text: `Error creating customer: ${response.error}` },
+        { 
+          type: "text" as const, 
+          text: `Error creating customer: ${response.error}`,
+        },
       ],
+      structuredContent: output,
     };
   }
 
+  const output = {
+    success: true,
+    data: response.result,
+  };
   return {
     content: [
-      { type: "text" as const, text: `Customer created:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
+      { 
+        type: "text" as const, 
+        text: `Customer created successfully: ${JSON.stringify(response.result, null, 2)}`,
+      },
     ],
+    structuredContent: output,
   };
 };
 

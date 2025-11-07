@@ -37,6 +37,10 @@ const toolHandler = async (args: { [x: string]: any }) => {
   const response = await createQuickbooksVendor(args.vendor);
 
   if (response.isError) {
+    const output = {
+      success: false,
+      error: response.error || "Unknown error",
+    };
     return {
       content: [
         {
@@ -44,18 +48,22 @@ const toolHandler = async (args: { [x: string]: any }) => {
           text: `Error creating vendor: ${response.error}`,
         },
       ],
+      structuredContent: output,
     };
   }
 
-  const vendor = response.result;
-
+  const output = {
+    success: true,
+    data: response.result,
+  };
   return {
     content: [
       {
         type: "text" as const,
-        text: JSON.stringify(vendor),
+        text: `Vendor created successfully: ${JSON.stringify(response.result, null, 2)}`,
       }
     ],
+    structuredContent: output,
   };
 };
 

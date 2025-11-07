@@ -75,10 +75,65 @@ Added tools for Create, Delete, Get, Search, Update for the following entities:
 - Vendor
 
 
+## Testing
+
+We provide a comprehensive test suite that tests all tools with real QuickBooks data. The test suite:
+
+- Fetches prerequisite data from QuickBooks (customers, vendors, bills, etc.)
+- Tests GET, READ, UPDATE, CREATE, and SEARCH operations
+- Provides detailed pass/fail/skip reporting
+- Measures execution time for each tool
+
+### Running Tests
+
+```bash
+# Option 1: Using environment variables
+export QUICKBOOKS_ACCESS_TOKEN="your_access_token"
+export QUICKBOOKS_REALM_ID="your_realm_id"
+npm run test:ts
+
+# Option 2: Using command line arguments
+npx ts-node test-all-tools.ts "your_access_token" "your_realm_id"
+
+# Option 3: Build and run
+npm run build
+npm test "your_access_token" "your_realm_id"
+```
+
+For detailed testing documentation, see [TESTING.md](TESTING.md).
+
+## Multi-Tenant Architecture
+
+The server now supports dynamic multi-tenant credential handling:
+
+- Each request passes credentials via headers:
+  - `Authorization: Bearer <accessToken>`
+  - `X-QuickBooks-RealmId: <realmId>`
+- No environment variables needed for credentials
+- Different users can access their own QuickBooks companies dynamically
+- Perfect for SaaS applications with multiple QuickBooks integrations
+
+### Example: Multi-Tenant Usage
+
+```javascript
+// Each request includes both headers
+const headers = {
+  'Authorization': 'Bearer eyJhbGciOiJSUzI1Ni...',
+  'X-QuickBooks-RealmId': '9341453159261958'
+};
+
+// The MCP server extracts credentials from headers automatically
+// and routes the request to the correct QuickBooks company
+```
+
 ## Error Handling
 
 If you see an error message like "QuickBooks not connected", make sure to:
 
 1. Check that your `.env` file contains all required variables
 2. Verify that your tokens are valid and not expired
+3. For multi-tenant setups, ensure headers are properly set
+
+
+```
 

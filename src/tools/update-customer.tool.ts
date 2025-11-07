@@ -22,31 +22,31 @@ const toolHandler = async (
     const response = await updateQuickbooksCustomer(params.customer);
 
     if (response.isError) {
-        const output = {
-            success: false,
-            error: response.error || "Unknown error occurred",
-        };
         return {
             content: [
                 {
                     type: "text" as const,
-                    text: JSON.stringify(output, null, 2),
+                    text: `Error updating customer: ${response.error}`,
+                    structured: {
+                        success: false,
+                        error: response.error || "Unknown error occurred",
+                    }
                 },
             ],
-            structuredContent: output,
-            isError: true,
         };
     }
 
-    const output = {
-        success: true,
-        customer: response.result,
-    };
     return {
         content: [
-            { type: "text" as const, text: JSON.stringify(output, null, 2) },
+            { 
+                type: "text" as const, 
+                text: `Customer updated successfully: ${JSON.stringify(response.result, null, 2)}`,
+                structured: {
+                    success: true,
+                    customer: response.result,
+                }
+            },
         ],
-        structuredContent: output,
     };
 };
 

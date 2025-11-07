@@ -12,7 +12,7 @@ export interface ToolDefinition<
     title: string;
     description: string;
     inputSchema: TInput;
-    outputSchema: TOutput;
+    outputSchema?: TOutput;
     handler: (params: z.infer<z.ZodObject<TInput>>) => Promise<{
         content: Array<{ type: "text"; text: string }>;
         structuredContent?: z.infer<z.ZodObject<TOutput>>;

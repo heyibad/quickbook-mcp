@@ -88,16 +88,33 @@ const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => 
       error: response.error || "Unknown error occurred",
     };
     return {
-      content: [{ type: "text" as const, text: `Error searching customers: ${response.error}` }],
+      content: [
+        { 
+          type: "text" as const, 
+          text: `Error searching customers: ${response.error}`,
+        }
+      ],
+      structuredContent: output,
     };
   }
+  
+  const output = {
+    success: true,
+    data: response.result,
+  };
+  
+  const resultText = Array.isArray(response.result) 
+    ? `Found ${response.result.length} customers` 
+    : `Count: ${response.result}`;
+    
   return {
     content: [
-      { type: "text" as const, text: Array.isArray(response.result) ? `Found ${response.result.length} customers:` : `Count: ${response.result}` },
-      ...(Array.isArray(response.result)
-        ? response.result.map((c) => ({ type: "text" as const, text: JSON.stringify(c) }))
-        : []),
+      { 
+        type: "text" as const, 
+        text: `${resultText}\n${JSON.stringify(response.result, null, 2)}`,
+      },
     ],
+    structuredContent: output,
   };
 };
 

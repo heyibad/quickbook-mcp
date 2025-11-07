@@ -1,9 +1,5 @@
-import {
-    makeQuickBooksRequest,
-    queryQuickBooks,
-    extractAccessToken,
-} from "../helpers/quickbooks-api.js";
-import { getRequestHeaders } from "../helpers/request-context.js";
+import { getQuickBooksCredentials } from "../helpers/request-context.js";
+import { makeQuickBooksRequest } from "../helpers/quickbooks-api.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 
@@ -15,17 +11,8 @@ export async function deleteQuickbooksCustomer(
     idOrEntity: any
 ): Promise<ToolResponse<any>> {
     try {
-        // Get access token from request headers
-        const headers = getRequestHeaders();
-        const accessToken = extractAccessToken(headers);
-
-        if (!accessToken) {
-            return {
-                result: null,
-                isError: true,
-                error: "Missing Authorization header. Please provide: Authorization: Bearer <access_token>",
-            };
-        }
+        // Get credentials from request headers
+        const { accessToken, realmId } = getQuickBooksCredentials();
 
         // Try to delete using the delete operation first
         let deleteBody: any;
@@ -37,6 +24,7 @@ export async function deleteQuickbooksCustomer(
                 method: "GET",
                 endpoint: `/customer/${idOrEntity}`,
                 accessToken,
+            realmId,
             });
 
             if (getResponse.isError) {
@@ -59,6 +47,7 @@ export async function deleteQuickbooksCustomer(
             body: deleteBody,
             queryParams: { operation: "delete" },
             accessToken,
+            realmId,
         });
 
         // If delete fails, fall back to marking as inactive
@@ -69,6 +58,7 @@ export async function deleteQuickbooksCustomer(
                 method: "GET",
                 endpoint: `/customer/${customerId}`,
                 accessToken,
+            realmId,
             });
 
             if (getResponse.isError) {
@@ -95,6 +85,7 @@ export async function deleteQuickbooksCustomer(
                 endpoint: "/customer",
                 body: inactivePayload,
                 accessToken,
+            realmId,
             });
 
             if (updateResponse.isError) {

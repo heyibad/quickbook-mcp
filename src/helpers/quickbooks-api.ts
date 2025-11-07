@@ -32,6 +32,8 @@ export interface QuickBooksRequestConfig {
     queryParams?: Record<string, string>;
     /** Access token from request headers */
     accessToken: string;
+    /** QuickBooks Realm ID (company ID) */
+    realmId: string;
     /** Minor version for QuickBooks API (default: 65) */
     minorVersion?: number;
 }
@@ -71,12 +73,13 @@ export async function makeQuickBooksRequest<T = any>(
         body,
         queryParams = {},
         accessToken,
+        realmId,
         minorVersion = 65,
     } = config;
 
     try {
-        // Build the full URL
-        const url = new URL(`${BASE_URL}/v3/company/${REALM_ID}${endpoint}`);
+        // Build the full URL using the provided realmId
+        const url = new URL(`${BASE_URL}/v3/company/${realmId}${endpoint}`);
 
         // Add minor version to query params
         url.searchParams.append("minorversion", minorVersion.toString());
@@ -180,13 +183,15 @@ export function extractAccessToken(
  * ```typescript
  * const customers = await queryQuickBooks({
  *   query: "SELECT * FROM Customer WHERE DisplayName LIKE 'John%'",
- *   accessToken: token
+ *   accessToken: token,
+ *   realmId: "123456789"
  * });
  * ```
  */
 export async function queryQuickBooks<T = any>(config: {
     query: string;
     accessToken: string;
+    realmId: string;
     minorVersion?: number;
 }): Promise<QuickBooksResponse<T>> {
     return makeQuickBooksRequest<T>({
@@ -194,6 +199,7 @@ export async function queryQuickBooks<T = any>(config: {
         endpoint: "/query",
         queryParams: { query: config.query },
         accessToken: config.accessToken,
+        realmId: config.realmId,
         minorVersion: config.minorVersion,
     });
 }

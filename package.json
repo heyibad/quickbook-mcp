@@ -17,8 +17,8 @@
         "lint": "eslint .",
         "auth": "node dist/auth-server.js",
         "start": "node dist/index.js",
-        "test": "node test-all-tools.mjs",
-        "test:quick": "node test-quick.mjs"
+        "test": "npm run build && node dist/test-all-tools.js",
+        "test:ts": "npx ts-node test-all-tools.ts"
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.20.2",
@@ -27,7 +27,8 @@
         "intuit-oauth": "^4.0.0",
         "node-quickbooks": "^2.0.43",
         "open": "^9.1.0",
-        "zod": "^3.24.2"
+        "zod": "^3.24.2",
+        "zod-to-json-schema": "^3.24.6"
     },
     "devDependencies": {
         "@eslint/js": "^9.22.0",

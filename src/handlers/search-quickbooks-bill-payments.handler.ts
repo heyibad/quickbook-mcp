@@ -1,7 +1,7 @@
-import { makeQuickBooksRequest, queryQuickBooks, extractAccessToken } from "../helpers/quickbooks-api.js";
-import { getRequestHeaders } from "../helpers/request-context.js";
+import { makeQuickBooksRequest, queryQuickBooks } from "../helpers/quickbooks-api.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
+import { getQuickBooksCredentials } from "../helpers/request-context.js";
 import { buildQuickbooksSearchCriteria } from "../helpers/build-quickbooks-search-criteria.js";
 import { convertCriteriaToSQL } from "../helpers/criteria-to-sql.js";
 
@@ -10,24 +10,15 @@ import { convertCriteriaToSQL } from "../helpers/criteria-to-sql.js";
  */
 export async function searchQuickbooksBillPayments(params: any): Promise<ToolResponse<any>> {
   try {
-    // Get access token from request headers
-    const headers = getRequestHeaders();
-    const accessToken = extractAccessToken(headers);
-    
-    if (!accessToken) {
-      return {
-        result: null,
-        isError: true,
-        error: "Missing Authorization header. Please provide: Authorization: Bearer <access_token>"
-      };
-    }
+    const { accessToken, realmId } = getQuickBooksCredentials();
 
     const normalizedCriteria = buildQuickbooksSearchCriteria(params);
     const sqlQuery = convertCriteriaToSQL("BillPayment", normalizedCriteria);
     
     const response = await queryQuickBooks({
       query: sqlQuery,
-      accessToken
+      accessToken,
+      realmId
     });
 
     if (response.isError) {

@@ -1,10 +1,7 @@
-import {
-    makeQuickBooksRequest,
-    extractAccessToken,
-} from "../helpers/quickbooks-api.js";
-import { getRequestHeaders } from "../helpers/request-context.js";
+import { makeQuickBooksRequest, queryQuickBooks } from "../helpers/quickbooks-api.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
+import { getQuickBooksCredentials } from "../helpers/request-context.js";
 
 /**
  * Read a single invoice from QuickBooks Online by its ID
@@ -13,23 +10,14 @@ export async function readQuickbooksInvoice(
     invoiceId: string
 ): Promise<ToolResponse<any>> {
     try {
-        // Get access token from request headers
-        const headers = getRequestHeaders();
-        const accessToken = extractAccessToken(headers);
-
-        if (!accessToken) {
-            return {
-                result: null,
-                isError: true,
-                error: "Missing Authorization header. Please provide: Authorization: Bearer <access_token>",
-            };
-        }
+        const { accessToken, realmId } = getQuickBooksCredentials();
 
         // Make direct API call to QuickBooks
         const response = await makeQuickBooksRequest({
             method: "GET",
             endpoint: `/invoice/${invoiceId}`,
             accessToken,
+            realmId,
         });
 
         if (response.isError) {

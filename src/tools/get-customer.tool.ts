@@ -22,6 +22,10 @@ const toolHandler = async (
     const response = await getQuickbooksCustomer(params.id);
 
     if (response.isError) {
+        const output = {
+            success: false,
+            error: response.error || "Unknown error",
+        };
         return {
             content: [
                 {
@@ -29,14 +33,22 @@ const toolHandler = async (
                     text: `Error getting customer: ${response.error}`,
                 },
             ],
+            structuredContent: output,
         };
     }
 
+    const output = {
+        success: true,
+        customer: response.result,
+    };
     return {
         content: [
-            { type: "text" as const, text: `Customer:` },
-            { type: "text" as const, text: JSON.stringify(response.result) },
+            { 
+                type: "text" as const, 
+                text: `Customer retrieved successfully: ${JSON.stringify(response.result, null, 2)}`,
+            },
         ],
+        structuredContent: output,
     };
 };
 
