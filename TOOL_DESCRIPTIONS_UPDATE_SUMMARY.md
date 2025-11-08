@@ -1,7 +1,9 @@
 # Tool Descriptions Update Summary
 
 ## Overview
+
 Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensive, detailed descriptions that include:
+
 - **Why use this tool** - Business reasons and benefits
 - **When to use** - Specific scenarios and use cases
 - **Parameters** - Detailed parameter explanations with types
@@ -11,6 +13,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 ## Tools Updated (50 Total)
 
 ### Customer Tools (5) ✅
+
 - `create-customer.tool.ts` - Create customer records
 - `get-customer.tool.ts` - Retrieve customer by ID
 - `update-customer.tool.ts` - Update customer information
@@ -18,6 +21,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-customers.tool.ts` - Search/filter customers
 
 ### Vendor Tools (5) ✅
+
 - `create-vendor.tool.ts` - Create vendor records
 - `get-vendor.tool.ts` - Retrieve vendor by ID
 - `update-vendor.tool.ts` - Update vendor information
@@ -25,6 +29,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-vendors.tool.ts` - Search/filter vendors
 
 ### Bill Tools (5) ✅
+
 - `create-bill.tool.ts` - Create bills (accounts payable)
 - `get-bill.tool.ts` - Retrieve bill by ID
 - `update-bill.tool.ts` - Update bill details
@@ -32,6 +37,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-bills.tool.ts` - Search/filter bills
 
 ### Bill Payment Tools (5) ✅
+
 - `create-bill-payment.tool.ts` - Record vendor payments
 - `get-bill-payment.tool.ts` - Retrieve payment by ID
 - `update-bill-payment.tool.ts` - Update payment details
@@ -39,29 +45,34 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-bill-payments.tool.ts` - Search/filter payments
 
 ### Invoice Tools (3) ✅
+
 - `create-invoice.tool.ts` - Create invoices (accounts receivable)
 - `read-invoice.tool.ts` - Retrieve invoice by ID (already had good description)
 - `update-invoice.tool.ts` - Update invoice details
 - `search-invoices.tool.ts` - Search/filter invoices
 
 ### Employee Tools (4) ✅
+
 - `create-employee.tool.ts` - Create employee records
 - `get-employee.tool.ts` - Retrieve employee by ID
 - `update-employee.tool.ts` - Update employee information
 - `search-employees.tool.ts` - Search/filter employees
 
 ### Item Tools (4) ✅
+
 - `create-item.tool.ts` - Create products/services (already had good description)
 - `read-item.tool.ts` - Retrieve item by ID
 - `update-item.tool.ts` - Update item details
 - `search-items.tool.ts` - Search/filter items
 
 ### Account Tools (3) ✅
+
 - `create-account.tool.ts` - Create chart of accounts entries
 - `update-account.tool.ts` - Update account details
 - `search-accounts.tool.ts` - Search/filter accounts (already had good description)
 
 ### Estimate Tools (5) ✅
+
 - `create-estimate.tool.ts` - Create sales estimates/quotes
 - `get-estimate.tool.ts` - Retrieve estimate by ID
 - `update-estimate.tool.ts` - Update estimate details
@@ -69,6 +80,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-estimates.tool.ts` - Search/filter estimates
 
 ### Purchase Tools (5) ✅
+
 - `create-purchase.tool.ts` - Create expense transactions
 - `get-purchase.tool.ts` - Retrieve purchase by ID
 - `update-purchase.tool.ts` - Update purchase details
@@ -76,6 +88,7 @@ Successfully updated all 50+ QuickBooks Online MCP Server tools with comprehensi
 - `search-purchases.tool.ts` - Search/filter purchases
 
 ### Journal Entry Tools (5) ✅
+
 - `create-journal-entry.tool.ts` - Create accounting journal entries
 - `get-journal-entry.tool.ts` - Retrieve journal entry by ID
 - `update-journal-entry.tool.ts` - Update journal entry details
@@ -142,28 +155,33 @@ const toolDescription = `[Brief one-line summary]
 ## Key Features of Updated Descriptions
 
 ### 1. Business Context
+
 - Explains WHY someone would use each tool
 - Real-world business benefits and use cases
 - Clear value proposition for each operation
 
 ### 2. Usage Scenarios
+
 - Specific situations calling for each tool
 - Context-aware recommendations
 - Workflow guidance
 
 ### 3. Parameter Documentation
+
 - Complete parameter lists with types
 - Required vs optional clearly marked
 - Special constraints and rules explained
 - Field-level descriptions
 
 ### 4. Practical Examples
+
 - 3-6 real-world usage examples per tool
 - Complete JSON parameter objects
 - Different scenarios covered (simple to complex)
 - Actual field values, not placeholders
 
 ### 5. Return Value Documentation
+
 - Clear explanation of what data is returned
 - Key fields highlighted
 - Metadata and tracking information noted
@@ -178,11 +196,13 @@ const toolDescription = `[Brief one-line summary]
 ## Example Transformation
 
 ### Before:
+
 ```typescript
 const toolDescription = "Create a bill in QuickBooks Online.";
 ```
 
 ### After:
+
 ```typescript
 const toolDescription = `Create a bill (accounts payable) in QuickBooks Online to record money you owe to vendors for goods or services received.
 
@@ -202,28 +222,32 @@ const toolDescription = `Create a bill (accounts payable) in QuickBooks Online t
 ## Benefits of Updated Descriptions
 
 1. **Better Developer Experience**
-   - Clear understanding of each tool's purpose
-   - Quick identification of right tool for the job
-   - Self-documenting API
+
+    - Clear understanding of each tool's purpose
+    - Quick identification of right tool for the job
+    - Self-documenting API
 
 2. **Reduced Support Burden**
-   - Less confusion about tool usage
-   - Fewer implementation errors
-   - Examples provide copy-paste starting points
+
+    - Less confusion about tool usage
+    - Fewer implementation errors
+    - Examples provide copy-paste starting points
 
 3. **Improved AI Integration**
-   - LLMs can better understand tool purposes
-   - More accurate tool selection by AI agents
-   - Better parameter value suggestions
+
+    - LLMs can better understand tool purposes
+    - More accurate tool selection by AI agents
+    - Better parameter value suggestions
 
 4. **Enhanced Discoverability**
-   - Searchable descriptions
-   - Clear use case mapping
-   - Complete workflow guidance
+    - Searchable descriptions
+    - Clear use case mapping
+    - Complete workflow guidance
 
 ## Next Steps
 
 All 50+ tools now have comprehensive descriptions. The QuickBooks Online MCP Server is now fully documented with:
+
 - ✅ Optimized handler code (74% reduction)
 - ✅ Comprehensive test suite (95.8% pass rate)
 - ✅ Complete documentation (ARCHITECTURE.md, OPTIMIZATION_SUMMARY.md, FINAL_REPORT.md)
@@ -232,6 +256,7 @@ All 50+ tools now have comprehensive descriptions. The QuickBooks Online MCP Ser
 The codebase is now production-ready with excellent documentation for developers and AI agents.
 
 ---
+
 **Update Completed**: All 50+ tool descriptions updated successfully
 **Total Documentation**: 25,000+ lines of comprehensive guidance
 **Format**: Consistent across all tools with why/when/params/examples/returns sections

@@ -50,41 +50,48 @@ const toolDescription = `Retrieve a specific employee record by ID from QuickBoo
 
 // Define the expected input schema for getting an employee
 const inputSchema = {
-  id: z.string(),
+    id: z.string(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
-
 
 // Define the tool handler
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const response = await getQuickbooksEmployee(params.id);
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const response = await getQuickbooksEmployee(params.id);
 
-  if (response.isError) {
+    if (response.isError) {
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error getting employee: ${response.error}`,
+                },
+            ],
+        };
+    }
+
     return {
-      content: [
-        { type: "text" as const, text: `Error getting employee: ${response.error}` },
-      ],
+        content: [
+            { type: "text" as const, text: `Employee retrieved:` },
+            { type: "text" as const, text: JSON.stringify(response.result) },
+        ],
     };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: `Employee retrieved:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
-    ],
-  };
 };
 
-export const GetEmployeeTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const GetEmployeeTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

@@ -9,6 +9,7 @@
 The format documentation added to search tool files contained markdown code blocks (triple backticks) inside TypeScript template strings, which caused 290 TypeScript compilation errors.
 
 Example of problematic syntax:
+
 ```typescript
 const toolDescription = `
 **Format 1:**
@@ -25,6 +26,7 @@ The nested backticks confused the TypeScript parser, thinking the template strin
 Replaced all markdown code blocks with plain text examples:
 
 **Before:**
+
 ```
 **Format 1: Empty object (get all records)**
 \`\`\`json
@@ -35,6 +37,7 @@ Replaced all markdown code blocks with plain text examples:
 ```
 
 **After:**
+
 ```
 **IMPORTANT - Three Input Formats:**
 
@@ -61,6 +64,7 @@ Format 3 - Advanced with filters key: { "filters": [{ "field": "FieldName", "val
 ## Fix Method
 
 Created automated script `fix-search-tool-syntax.cjs` that:
+
 1. Read each search tool file
 2. Located the problematic section between markers
 3. Replaced with simplified format (no markdown code blocks)
@@ -76,6 +80,7 @@ Created automated script `fix-search-tool-syntax.cjs` that:
 ## Core Fix Still Active
 
 The underlying bug fix in `src/helpers/build-quickbooks-search-criteria.ts` is still in place:
+
 - ✅ Handles pagination-only inputs: `{ "limit": 10, "desc": "MetaData.CreateTime" }`
 - ✅ Detects and converts to array format internally
 - ✅ Prevents pagination keywords from being treated as filter fields
@@ -83,6 +88,7 @@ The underlying bug fix in `src/helpers/build-quickbooks-search-criteria.ts` is s
 ## Test Case
 
 User's original failing query now works:
+
 ```javascript
 {
   "limit": 10,
@@ -91,11 +97,12 @@ User's original failing query now works:
 ```
 
 This is now correctly recognized as pagination-only and converted to:
+
 ```javascript
 [
-  { "field": "limit", "value": 10 },
-  { "field": "desc", "value": "MetaData.CreateTime" }
-]
+    { field: "limit", value: 10 },
+    { field: "desc", value: "MetaData.CreateTime" },
+];
 ```
 
 ## Files Created

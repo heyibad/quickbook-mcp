@@ -42,8 +42,7 @@ export function createEntityHandler(config: EntityConfig) {
                     result: null,
                     isError: true,
                     error:
-                        response.error ||
-                        `Failed to create ${config.singular}`,
+                        response.error || `Failed to create ${config.singular}`,
                 };
             }
 
@@ -127,8 +126,7 @@ export function updateEntityHandler(config: EntityConfig) {
                     result: null,
                     isError: true,
                     error:
-                        response.error ||
-                        `Failed to update ${config.singular}`,
+                        response.error || `Failed to update ${config.singular}`,
                 };
             }
 
@@ -179,8 +177,7 @@ export function deleteEntityHandler(config: EntityConfig) {
                     result: null,
                     isError: true,
                     error:
-                        response.error ||
-                        `Failed to delete ${config.singular}`,
+                        response.error || `Failed to delete ${config.singular}`,
                 };
             }
 

@@ -99,41 +99,48 @@ const toolDescription = `Update an existing employee record in QuickBooks Online
 
 // Define the expected input schema for updating an employee
 const inputSchema = {
-  employee: z.any(),
+    employee: z.any(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
-
 
 // Define the tool handler
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const response = await updateQuickbooksEmployee(params.employee);
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const response = await updateQuickbooksEmployee(params.employee);
 
-  if (response.isError) {
+    if (response.isError) {
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error updating employee: ${response.error}`,
+                },
+            ],
+        };
+    }
+
     return {
-      content: [
-        { type: "text" as const, text: `Error updating employee: ${response.error}` },
-      ],
+        content: [
+            { type: "text" as const, text: `Employee updated:` },
+            { type: "text" as const, text: JSON.stringify(response.result) },
+        ],
     };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: `Employee updated:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
-    ],
-  };
 };
 
-export const UpdateEmployeeTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const UpdateEmployeeTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

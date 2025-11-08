@@ -26,7 +26,9 @@ async function testSearchBills() {
         if (result.isError) {
             console.error("❌ FAILED:", result.error);
         } else {
-            console.log(`✅ SUCCESS: Found ${result.result?.length || 0} bills`);
+            console.log(
+                `✅ SUCCESS: Found ${result.result?.length || 0} bills`
+            );
             if (result.result?.[0]) {
                 console.log("   Sample:", {
                     Id: result.result[0].Id,
@@ -49,7 +51,9 @@ async function testSearchBills() {
         if (result.isError) {
             console.error("❌ FAILED:", result.error);
         } else {
-            console.log(`✅ SUCCESS: Found ${result.result?.length || 0} bills`);
+            console.log(
+                `✅ SUCCESS: Found ${result.result?.length || 0} bills`
+            );
         }
     } catch (error) {
         console.error("❌ ERROR:", error.message);
@@ -63,7 +67,9 @@ async function testSearchBills() {
         if (result.isError) {
             console.error("❌ FAILED:", result.error);
         } else {
-            console.log(`✅ SUCCESS: Found ${result.result?.length || 0} bills`);
+            console.log(
+                `✅ SUCCESS: Found ${result.result?.length || 0} bills`
+            );
         }
     } catch (error) {
         console.error("❌ ERROR:", error.message);
@@ -80,7 +86,9 @@ async function testSearchBills() {
         if (result.isError) {
             console.error("❌ FAILED:", result.error);
         } else {
-            console.log(`✅ SUCCESS: Found ${result.result?.length || 0} unpaid bills`);
+            console.log(
+                `✅ SUCCESS: Found ${result.result?.length || 0} unpaid bills`
+            );
             if (result.result?.[0]) {
                 console.log("   Sample:", {
                     Id: result.result[0].Id,

@@ -49,41 +49,48 @@ const toolDescription = `Retrieve a specific bill payment by its ID from QuickBo
 
 // Define the expected input schema for getting a bill payment
 const inputSchema = {
-  id: z.string(),
+    id: z.string(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
-
 
 // Define the tool handler
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const response = await getQuickbooksBillPayment(params.id);
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const response = await getQuickbooksBillPayment(params.id);
 
-  if (response.isError) {
+    if (response.isError) {
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error getting bill payment: ${response.error}`,
+                },
+            ],
+        };
+    }
+
     return {
-      content: [
-        { type: "text" as const, text: `Error getting bill payment: ${response.error}` },
-      ],
+        content: [
+            { type: "text" as const, text: `Bill payment retrieved:` },
+            { type: "text" as const, text: JSON.stringify(response.result) },
+        ],
     };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: `Bill payment retrieved:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
-    ],
-  };
 };
 
-export const GetBillPaymentTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const GetBillPaymentTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

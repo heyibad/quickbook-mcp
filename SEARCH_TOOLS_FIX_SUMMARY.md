@@ -9,11 +9,13 @@ The `search_bills` tool (and all other search tools) was failing when using simp
 In `src/helpers/build-quickbooks-search-criteria.ts`, the function was checking if the input contained ANY advanced option keys (`limit`, `offset`, `asc`, `desc`, etc.), but if it found them, it was still treating the input as a simple object and passing it through unchanged.
 
 This caused the SQL converter to generate invalid queries like:
+
 ```sql
 SELECT * FROM Bill WHERE limit = 10
 ```
 
 Instead of:
+
 ```sql
 SELECT * FROM Bill MAXRESULTS 10
 ```
@@ -25,12 +27,14 @@ SELECT * FROM Bill MAXRESULTS 10
 **File**: `src/helpers/build-quickbooks-search-criteria.ts`
 
 **Changes**:
+
 - Added logic to detect when input contains ONLY pagination/sorting keys (no filter fields)
 - These inputs are now converted to array format automatically
 - Added logic to handle mixed format (filters + pagination in same object)
 - Removed dead code after early returns
 
 **New Logic**:
+
 1. If input has `filters` key → treat as advanced format
 2. If input has ONLY pagination/sorting keys → convert to array format
 3. If input has BOTH pagination AND filter keys → convert to array format (treat non-reserved keys as filters)
@@ -41,6 +45,7 @@ SELECT * FROM Bill MAXRESULTS 10
 **File**: `src/tools/search-bills.tool.ts`
 
 **Added**:
+
 - Comprehensive documentation of three input formats
 - Critical rules section with ⚠️ warnings
 - Clear examples of what works and what doesn't
@@ -53,6 +58,7 @@ SELECT * FROM Bill MAXRESULTS 10
 **File**: `SEARCH_TOOLS_USAGE_GUIDE.md`
 
 Comprehensive guide covering:
+
 - All three input formats with examples
 - Critical rules for using search tools
 - Decision tree for choosing format
@@ -64,6 +70,7 @@ Comprehensive guide covering:
 **File**: `test-search-bills-fixed.js`
 
 Test file demonstrating all three input formats:
+
 1. Empty criteria
 2. Pagination only (`{ limit: 5 }`)
 3. Array format with filters
@@ -74,34 +81,35 @@ Test file demonstrating all three input formats:
 ### Three Supported Formats
 
 1. **Empty/Pagination Only**:
-   ```json
-   {}
-   { "limit": 20 }
-   { "desc": "TxnDate", "limit": 10 }
-   ```
+
+    ```json
+    {}
+    { "limit": 20 }
+    { "desc": "TxnDate", "limit": 10 }
+    ```
 
 2. **Array Format** (explicit):
-   ```json
-   [
-     { "field": "Balance", "value": "0", "operator": ">" },
-     { "field": "limit", "value": 10 }
-   ]
-   ```
+
+    ```json
+    [
+        { "field": "Balance", "value": "0", "operator": ">" },
+        { "field": "limit", "value": 10 }
+    ]
+    ```
 
 3. **Advanced Options** (with filters key):
-   ```json
-   {
-     "filters": [
-       { "field": "Balance", "value": "0", "operator": ">" }
-     ],
-     "limit": 10,
-     "desc": "TxnDate"
-   }
-   ```
+    ```json
+    {
+        "filters": [{ "field": "Balance", "value": "0", "operator": ">" }],
+        "limit": 10,
+        "desc": "TxnDate"
+    }
+    ```
 
 ### Reserved Keywords
 
 These are for pagination/sorting ONLY:
+
 - `limit` - Max results
 - `offset` - Skip records
 - `asc` - Sort ascending
@@ -113,20 +121,23 @@ These are for pagination/sorting ONLY:
 ### Critical Rules
 
 1. ⚠️ **DO NOT** mix filter fields with pagination keywords in simple object format
-   - ❌ WRONG: `{ "VendorRef": "56", "limit": 10 }`
-   - ✅ CORRECT: `{ "filters": [{ "field": "VendorRef", "value": "56" }], "limit": 10 }`
+
+    - ❌ WRONG: `{ "VendorRef": "56", "limit": 10 }`
+    - ✅ CORRECT: `{ "filters": [{ "field": "VendorRef", "value": "56" }], "limit": 10 }`
 
 2. ⚠️ **DO** use array or advanced format when you need operators
-   - ❌ WRONG: `{ "Balance > 0": true }`
-   - ✅ CORRECT: `[{ "field": "Balance", "value": "0", "operator": ">" }]`
+
+    - ❌ WRONG: `{ "Balance > 0": true }`
+    - ✅ CORRECT: `[{ "field": "Balance", "value": "0", "operator": ">" }]`
 
 3. ⚠️ **DO** use simple object format ONLY for pure equality filters with no pagination
-   - ✅ CORRECT: `{ "VendorRef": "56" }`
-   - ✅ CORRECT: `{ "CustomerRef": "1", "Active": true }`
+    - ✅ CORRECT: `{ "VendorRef": "56" }`
+    - ✅ CORRECT: `{ "CustomerRef": "1", "Active": true }`
 
 ## Affected Tools
 
 All search tools now work correctly with these formats:
+
 - ✅ `search_bills`
 - ✅ `search_bill_payments`
 - ✅ `search_customers`
@@ -142,16 +153,19 @@ All search tools now work correctly with these formats:
 ## Testing
 
 ### Build
+
 ```bash
 npm run build
 ```
 
 ### Test
+
 ```bash
 node test-search-bills-fixed.js
 ```
 
 ### Test Results
+
 ```
 Testing search_bills tool...
 
@@ -173,14 +187,17 @@ Test 4: Advanced options format
 ## Code Changes Summary
 
 ### Files Modified
+
 1. `src/helpers/build-quickbooks-search-criteria.ts` - Fixed criteria parsing logic
 2. `src/tools/search-bills.tool.ts` - Updated description with format rules
 
 ### Files Created
+
 1. `SEARCH_TOOLS_USAGE_GUIDE.md` - Comprehensive usage documentation
 2. `test-search-bills-fixed.js` - Test file demonstrating correct usage
 
 ### Lines Changed
+
 - **Modified**: ~80 lines in `build-quickbooks-search-criteria.ts`
 - **Modified**: ~150 lines in `search-bills.tool.ts`
 - **Created**: ~400 lines in `SEARCH_TOOLS_USAGE_GUIDE.md`
@@ -203,11 +220,11 @@ Test 4: Advanced options format
 1. **Type Safety**: Add TypeScript discriminated unions for the three formats
 2. **Validation**: Add runtime validation to reject ambiguous mixed formats
 3. **Helper Functions**: Create helper functions for each format:
-   ```typescript
-   searchBills.withFilters({ field: "Balance", value: "0", operator: ">" })
-   searchBills.withPagination({ limit: 10, desc: "TxnDate" })
-   searchBills.simple({ VendorRef: "56" })
-   ```
+    ```typescript
+    searchBills.withFilters({ field: "Balance", value: "0", operator: ">" });
+    searchBills.withPagination({ limit: 10, desc: "TxnDate" });
+    searchBills.simple({ VendorRef: "56" });
+    ```
 4. **Better Error Messages**: Return specific error messages for format violations
 
 ## Summary

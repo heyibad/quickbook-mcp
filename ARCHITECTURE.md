@@ -60,36 +60,41 @@ Tool files define the MCP tool schemas and connect to handlers. These still cont
 ## Benefits
 
 ### ✅ **Reduced Code Duplication**
+
 - **Before**: 50+ handler files × 40-50 lines = ~2,500 lines of repetitive code
 - **After**: 50+ handler files × 7 lines + 300 lines of factory code = ~650 lines
 - **Savings**: ~75% reduction in handler code
 
 ### ✅ **Improved Maintainability**
+
 - Bug fixes only need to be made in one place (the factory)
 - New entities can be added by just adding a config entry
 - Consistent error handling across all handlers
 
 ### ✅ **Better Type Safety**
+
 - Centralized entity configurations reduce typos
 - Factory functions enforce consistent patterns
 
 ### ✅ **Easier Testing**
+
 - Test the factory once, benefit everywhere
 - Mock factories for unit testing individual tools
 
 ## Code Statistics
 
-| Component | Before | After | Reduction |
-|-----------|--------|-------|-----------|
-| Handler LOC | ~2,500 | ~650 | 74% |
-| Helper files | 6 | 8 | +2 (factory & config) |
-| Total project complexity | High | Low | - |
+| Component                | Before | After | Reduction             |
+| ------------------------ | ------ | ----- | --------------------- |
+| Handler LOC              | ~2,500 | ~650  | 74%                   |
+| Helper files             | 6      | 8     | +2 (factory & config) |
+| Total project complexity | High   | Low   | -                     |
 
 ## Adding a New Entity
 
 To add support for a new QuickBooks entity:
 
 1. **Add entity config** to `src/helpers/entity-configs.ts`:
+
 ```typescript
 newEntity: {
     singular: "new entity",
@@ -100,9 +105,14 @@ newEntity: {
 ```
 
 2. **Create handler files** (one-liners):
+
 ```typescript
-export const createQuickbooksNewEntity = createEntityHandler(ENTITY_CONFIGS.newEntity);
-export const getQuickbooksNewEntity = getEntityHandler(ENTITY_CONFIGS.newEntity);
+export const createQuickbooksNewEntity = createEntityHandler(
+    ENTITY_CONFIGS.newEntity
+);
+export const getQuickbooksNewEntity = getEntityHandler(
+    ENTITY_CONFIGS.newEntity
+);
 // etc.
 ```
 
@@ -149,6 +159,7 @@ src/
 ## Performance
 
 The factory pattern has **zero runtime overhead**:
+
 - Handlers are created once at import time
 - No dynamic dispatch or reflection at runtime
 - Same performance as hand-written handlers

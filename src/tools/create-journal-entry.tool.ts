@@ -147,41 +147,48 @@ const toolDescription = `Create a journal entry in QuickBooks Online for manual 
 
 // Define the expected input schema for creating a journal entry
 const inputSchema = {
-  journalEntry: z.any(),
+    journalEntry: z.any(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
-
 
 // Define the tool handler
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const response = await createQuickbooksJournalEntry(params.journalEntry);
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const response = await createQuickbooksJournalEntry(params.journalEntry);
 
-  if (response.isError) {
+    if (response.isError) {
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error creating journal entry: ${response.error}`,
+                },
+            ],
+        };
+    }
+
     return {
-      content: [
-        { type: "text" as const, text: `Error creating journal entry: ${response.error}` },
-      ],
+        content: [
+            { type: "text" as const, text: `Journal entry created:` },
+            { type: "text" as const, text: JSON.stringify(response.result) },
+        ],
     };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: `Journal entry created:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
-    ],
-  };
 };
 
-export const CreateJournalEntryTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const CreateJournalEntryTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

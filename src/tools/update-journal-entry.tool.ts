@@ -124,41 +124,48 @@ const toolDescription = `Update an existing journal entry in QuickBooks Online t
 
 // Define the expected input schema for updating a journal entry
 const inputSchema = {
-  journalEntry: z.any(),
+    journalEntry: z.any(),
 };
 
 const outputSchema = {
-  success: z.boolean().describe("Whether the operation was successful"),
-  data: z.any().optional().describe("The result data"),
-  error: z.string().optional().describe("Error message if operation failed"),
+    success: z.boolean().describe("Whether the operation was successful"),
+    data: z.any().optional().describe("The result data"),
+    error: z.string().optional().describe("Error message if operation failed"),
 };
-
 
 // Define the tool handler
-const toolHandler = async (params: z.infer<z.ZodObject<typeof inputSchema>>) => {
-  const response = await updateQuickbooksJournalEntry(params.journalEntry);
+const toolHandler = async (
+    params: z.infer<z.ZodObject<typeof inputSchema>>
+) => {
+    const response = await updateQuickbooksJournalEntry(params.journalEntry);
 
-  if (response.isError) {
+    if (response.isError) {
+        return {
+            content: [
+                {
+                    type: "text" as const,
+                    text: `Error updating journal entry: ${response.error}`,
+                },
+            ],
+        };
+    }
+
     return {
-      content: [
-        { type: "text" as const, text: `Error updating journal entry: ${response.error}` },
-      ],
+        content: [
+            { type: "text" as const, text: `Journal entry updated:` },
+            { type: "text" as const, text: JSON.stringify(response.result) },
+        ],
     };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: `Journal entry updated:` },
-      { type: "text" as const, text: JSON.stringify(response.result) },
-    ],
-  };
 };
 
-export const UpdateJournalEntryTool: ToolDefinition<typeof inputSchema, typeof outputSchema> = {
-  name: toolName,
-  title: toolTitle,
-  description: toolDescription,
-  inputSchema: inputSchema,
-  outputSchema: outputSchema,
-  handler: toolHandler,
-}; 
+export const UpdateJournalEntryTool: ToolDefinition<
+    typeof inputSchema,
+    typeof outputSchema
+> = {
+    name: toolName,
+    title: toolTitle,
+    description: toolDescription,
+    inputSchema: inputSchema,
+    outputSchema: outputSchema,
+    handler: toolHandler,
+};

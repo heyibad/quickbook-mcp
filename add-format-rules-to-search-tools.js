@@ -5,9 +5,9 @@
  * Run with: node add-format-rules-to-search-tools.js
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,71 +73,78 @@ Use array format or advanced format when combining filters with pagination/sorti
 For complete usage guide, see: SEARCH_TOOLS_USAGE_GUIDE.md
 `;
 
-const toolsDir = path.join(__dirname, 'src', 'tools');
+const toolsDir = path.join(__dirname, "src", "tools");
 const searchTools = [
-    'search-customers.tool.ts',
-    'search-vendors.tool.ts',
-    'search-invoices.tool.ts',
-    'search-bill-payments.tool.ts',
-    'search-employees.tool.ts',
-    'search-items.tool.ts',
-    'search-accounts.tool.ts',
-    'search-estimates.tool.ts',
-    'search-purchases.tool.ts',
-    'search-journal-entries.tool.ts'
+    "search-customers.tool.ts",
+    "search-vendors.tool.ts",
+    "search-invoices.tool.ts",
+    "search-bill-payments.tool.ts",
+    "search-employees.tool.ts",
+    "search-items.tool.ts",
+    "search-accounts.tool.ts",
+    "search-estimates.tool.ts",
+    "search-purchases.tool.ts",
+    "search-journal-entries.tool.ts",
 ];
 
-console.log('Adding format rules to search tools...\n');
+console.log("Adding format rules to search tools...\n");
 
 let updatedCount = 0;
 let skippedCount = 0;
 
 for (const toolFile of searchTools) {
     const filePath = path.join(toolsDir, toolFile);
-    
+
     if (!fs.existsSync(filePath)) {
         console.log(`❌ File not found: ${toolFile}`);
         continue;
     }
-    
-    let content = fs.readFileSync(filePath, 'utf8');
-    
+
+    let content = fs.readFileSync(filePath, "utf8");
+
     // Check if format rules already exist
-    if (content.includes('**IMPORTANT: Three Input Formats**')) {
+    if (content.includes("**IMPORTANT: Three Input Formats**")) {
         console.log(`⏭️  Skipped (already has format rules): ${toolFile}`);
         skippedCount++;
         continue;
     }
-    
+
     // Find where to insert (after "When to use:" section, before "**Parameters:**" or "**Supported fields:**")
     const insertMarkers = [
         /(\*\*When to use:\*\*[\s\S]*?)\n\n\*\*Parameters:\*\*/,
         /(\*\*When to use:\*\*[\s\S]*?)\n\n\*\*Supported fields:\*\*/,
-        /(\*\*When to use:\*\*[\s\S]*?)\n\n\*\*Example usage:\*\*/
+        /(\*\*When to use:\*\*[\s\S]*?)\n\n\*\*Example usage:\*\*/,
     ];
-    
+
     let inserted = false;
     for (const marker of insertMarkers) {
         if (marker.test(content)) {
-            content = content.replace(marker, `$1\n${FORMAT_RULES}\n\n**Parameters:**`);
+            content = content.replace(
+                marker,
+                `$1\n${FORMAT_RULES}\n\n**Parameters:**`
+            );
             inserted = true;
             break;
         }
     }
-    
+
     if (!inserted) {
         console.log(`⚠️  Could not find insertion point in: ${toolFile}`);
-        console.log('   File structure may be different. Manual update needed.');
+        console.log(
+            "   File structure may be different. Manual update needed."
+        );
         skippedCount++;
         continue;
     }
-    
+
     // Write back
-    fs.writeFileSync(filePath, content, 'utf8');
+    fs.writeFileSync(filePath, content, "utf8");
     console.log(`✅ Updated: ${toolFile}`);
     updatedCount++;
 }
 
 console.log(`\n✅ Updated: ${updatedCount} files`);
 console.log(`⏭️  Skipped: ${skippedCount} files`);
-console.log('\nDone! Run "npm run build" to rebuild with updated descriptions.');
+console.log(
+    '\nDone! Run "npm run build" to rebuild with updated descriptions.'
+);

@@ -13,4 +13,6 @@ import { ENTITY_CONFIGS } from "../helpers/entity-configs.js";
  * `fetchAll`, `count` can be supplied via the top‑level criteria object or as
  * dedicated entries in the array form.
  */
-export const searchQuickbooksCustomers = searchEntityHandler(ENTITY_CONFIGS.customer);
+export const searchQuickbooksCustomers = searchEntityHandler(
+    ENTITY_CONFIGS.customer
+);
