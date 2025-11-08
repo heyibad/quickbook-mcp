@@ -6,6 +6,11 @@ const toolName = "search_vendors";
 const toolTitle = "Search Vendors";
 const toolDescription = `Search and filter vendors in QuickBooks Online using various criteria like name, email, company, balance, 1099 status, and more. Supports advanced filtering with operators and pagination.
 
+⚠️ **IMPORTANT**: This searches VENDORS (suppliers/payees), NOT accounts/customers/employees!
+- To search accounts: use search_accounts
+- To search customers: use search_customers
+- To search employees: use search_employees
+
 **Why use this tool:**
 - Find vendors by name, email, or company before creating bills
 - Get list of vendors for dropdown menus or selection lists

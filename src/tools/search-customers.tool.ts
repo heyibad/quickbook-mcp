@@ -6,6 +6,11 @@ const toolName = "search_customers";
 const toolTitle = "Search Customers";
 const toolDescription = `Search and filter customers in QuickBooks Online using various criteria like name, email, company, balance, and more. Supports advanced filtering with operators and pagination.
 
+⚠️ **IMPORTANT**: This searches CUSTOMERS (buyers/clients), NOT accounts/vendors/employees!
+- To search accounts: use search_accounts
+- To search vendors: use search_vendors
+- To search employees: use search_employees
+
 **Why use this tool:**
 - Find customers by name, email, or company before creating transactions
 - Get list of customers for dropdown menus or selection lists

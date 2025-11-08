@@ -6,6 +6,11 @@ const toolName = "search_accounts";
 const toolTitle = "Search Accounts";
 const toolDescription = `Search and filter Chart of Accounts entries in QuickBooks Online by account type, name, classification, and other criteria.
 
+⚠️ **IMPORTANT**: This searches ACCOUNTS (chart of accounts), NOT customers/vendors/employees!
+- To search vendors: use search_vendors
+- To search customers: use search_customers  
+- To search employees: use search_employees
+
 **Why use this tool:**
 - Find accounts for categorizing transactions
 - Get list of expense accounts for bill/purchase line items
