@@ -3,8 +3,38 @@ import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
 
 const toolName = "get-vendor";
-const toolTitle = "Get-vendor";
-const toolDescription = "Get a vendor by ID from QuickBooks Online.";
+const toolTitle = "Get Vendor";
+const toolDescription = `Retrieve detailed information about a specific vendor from QuickBooks Online using their unique ID.
+
+**Why use this tool:**
+- Get complete vendor details including contact information, payment terms, and account balances
+- Verify vendor existence before creating bills or expenses
+- Retrieve current sync token for update operations
+- Access vendor 1099 status and tax information
+- Check vendor payment history and outstanding balances
+
+**When to use:**
+- Before creating a bill or expense for a vendor
+- When displaying vendor details in your application
+- To verify vendor information before processing payments
+- When updating vendor records (need current SyncToken)
+- Checking 1099 contractor status
+
+**Parameters:**
+- id (required): The unique QuickBooks ID of the vendor (e.g., "56", "142")
+
+**Example usage:**
+1. Get vendor with ID "56":
+   { "id": "56" }
+
+2. Retrieve vendor for bill creation:
+   { "id": "89" }
+
+3. Get 1099 contractor details:
+   { "id": "123" }
+
+**Returns:**
+- Vendor object with fields: Id, DisplayName, GivenName, FamilyName, CompanyName, PrimaryEmailAddr, PrimaryPhone, BillAddr, Balance, Vendor1099, SyncToken, etc.`;
 const inputSchema = {
     id: z.string(),
 };

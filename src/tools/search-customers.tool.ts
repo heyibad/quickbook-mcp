@@ -4,8 +4,109 @@ import { z } from "zod";
 
 const toolName = "search_customers";
 const toolTitle = "Search Customers";
-const toolDescription =
-    "Search customers in QuickBooks Online that match given criteria.";
+const toolDescription = `Search and filter customers in QuickBooks Online using various criteria like name, email, company, balance, and more. Supports advanced filtering with operators and pagination.
+
+**Why use this tool:**
+- Find customers by name, email, or company before creating transactions
+- Get list of customers for dropdown menus or selection lists
+- Find customers with outstanding balances
+- Search for customers by partial name matches
+- Filter customers by active/inactive status
+- Generate customer reports and analytics
+
+**When to use:**
+- Need to find a customer by name before creating an invoice
+- Building a customer selection interface
+- Searching for customers by email or phone
+- Getting list of active customers for reporting
+- Finding customers with specific characteristics (e.g., high balance)
+- Verifying if a customer exists before creating a new one
+
+
+**IMPORTANT - Three Input Formats:**
+
+Format 1 - Pagination only: { "limit": 10, "desc": "MetaData.CreateTime" }
+Format 2 - Array with operators: [{ "field": "FieldName", "value": "value", "operator": ">" }, { "field": "limit", "value": 10 }]
+Format 3 - Advanced with filters key: { "filters": [{ "field": "FieldName", "value": "value", "operator": ">" }], "limit": 10 }
+
+**CRITICAL RULES:**
+1. For pagination ONLY, use Format 1 or Format 3 with empty filters
+2. For simple filters WITHOUT pagination, use: { "FieldName": "value" }
+3. NEVER mix filter fields with reserved keywords (limit, offset, asc, desc, count, fetchAll, filters) in simple object format
+4. When combining filters with pagination, use Format 2 (array) or Format 3 (filters key)
+5. For operators (>, <, >=, <=, LIKE, IN), use Format 2 or Format 3
+
+**Reserved Keywords:** limit, offset, asc, desc, count, fetchAll, filters
+
+See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
+
+
+**Parameters:**
+- criteria (optional): Array of filter objects OR simple key-value object
+  - Simple format: { "Active": true, "limit": 10 }
+  - Advanced format with operators: [{ "field": "DisplayName", "value": "John", "operator": "LIKE" }]
+- limit (optional): Maximum number of results (default: unlimited)
+- offset (optional): Number of records to skip for pagination
+- asc (optional): Field name to sort ascending
+- desc (optional): Field name to sort descending
+
+**Supported fields:**
+- Id, DisplayName, GivenName, FamilyName, CompanyName
+- PrimaryEmailAddr, PrimaryPhone
+- Balance, Active
+- MetaData.CreateTime, MetaData.LastUpdatedTime
+
+**Operators:**
+- = (equals), < (less than), > (greater than)
+- <= (less than or equal), >= (greater than or equal)
+- LIKE (partial match), IN (list of values)
+
+**Example usage:**
+1. Get all active customers (limit 10):
+   {
+     "criteria": { "Active": true, "limit": 10 }
+   }
+
+2. Search by name (partial match):
+   {
+     "criteria": [
+       { "field": "DisplayName", "value": "John", "operator": "LIKE" }
+     ],
+     "limit": 20
+   }
+
+3. Find customers with balance > 0:
+   {
+     "criteria": [
+       { "field": "Balance", "value": "0", "operator": ">" }
+     ]
+   }
+
+4. Search by email:
+   {
+     "criteria": [
+       { "field": "PrimaryEmailAddr", "value": "john@example.com" }
+     ]
+   }
+
+5. Get customers sorted by name:
+   {
+     "criteria": { "Active": true },
+     "asc": "DisplayName",
+     "limit": 50
+   }
+
+6. Complex search - active customers with balance > 100:
+   {
+     "criteria": [
+       { "field": "Active", "value": true },
+       { "field": "Balance", "value": "100", "operator": ">" }
+     ],
+     "desc": "Balance"
+   }
+
+**Returns:**
+- Array of customer objects matching the criteria`;
 
 // Common Customer entity fields that are filterable. Not exhaustive – any
 // property present on the QuickBooks Customer object is valid.

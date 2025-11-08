@@ -4,7 +4,32 @@ import { z } from "zod";
 
 const toolName = "get_customer";
 const toolTitle = "Get Customer";
-const toolDescription = "Get a customer by Id from QuickBooks Online.";
+const toolDescription = `Retrieve detailed information about a specific customer from QuickBooks Online using their unique ID.
+
+**Why use this tool:**
+- Get complete customer details including contact information, billing address, payment terms, and balance
+- Verify customer existence before creating invoices or transactions
+- Retrieve current sync token for update operations
+- Access customer metadata like creation date and last modified time
+
+**When to use:**
+- Before creating an invoice or estimate for a customer
+- When you need to display customer details in your application
+- To verify customer information before processing transactions
+- When updating customer records (need current SyncToken)
+
+**Parameters:**
+- id (required): The unique QuickBooks ID of the customer (e.g., "58", "123")
+
+**Example usage:**
+1. Get customer with ID "58":
+   { "id": "58" }
+
+2. Retrieve customer for invoice creation:
+   { "id": "142" }
+
+**Returns:**
+- Customer object with fields: Id, DisplayName, GivenName, FamilyName, CompanyName, PrimaryEmailAddr, PrimaryPhone, BillAddr, Balance, SyncToken, etc.`;
 
 const inputSchema = {
     id: z.string().describe("The ID of the customer to retrieve"),

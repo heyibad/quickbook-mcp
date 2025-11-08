@@ -1,34 +1,7 @@
-import {
-    makeQuickBooksRequest,
-    queryQuickBooks,
-} from "../helpers/quickbooks-api.js";
-import { ToolResponse } from "../types/tool-response.js";
-import { formatError } from "../helpers/format-error.js";
-import { getQuickBooksCredentials } from "../helpers/request-context.js";
+import { readEntityHandler } from "../helpers/handler-factory.js";
+import { ENTITY_CONFIGS } from "../helpers/entity-configs.js";
 
-export async function readQuickbooksItem(
-    id: string
-): Promise<ToolResponse<any>> {
-    try {
-        const { accessToken, realmId } = getQuickBooksCredentials();
-
-        const response = await makeQuickBooksRequest({
-            method: "GET",
-            endpoint: `/item/${id}`,
-            accessToken,
-            realmId,
-        });
-
-        if (response.isError) {
-            return {
-                result: null,
-                isError: true,
-                error: response.error || "Failed to retrieve item",
-            };
-        }
-
-        return { result: response.result?.Item, isError: false, error: null };
-    } catch (error) {
-        return { result: null, isError: true, error: formatError(error) };
-    }
-}
+/**
+ * Read item in QuickBooks Online
+ */
+export const readQuickbooksItem = readEntityHandler(ENTITY_CONFIGS.item);

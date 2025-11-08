@@ -50,58 +50,85 @@ export function buildQuickbooksSearchCriteria(
     return input as Array<Record<string, any>>;
   }
 
-  // If the input is a plain object that does NOT look like advanced options, forward as-is
-  const possibleAdvancedKeys: (keyof AdvancedQuickbooksSearchOptions)[] = [
-    "filters",
-    "asc",
-    "desc",
-    "limit",
-    "offset",
-    "count",
-    "fetchAll",
-  ];
-
+  // If the input is a plain object, check if it contains ONLY pagination/sorting keys
+  // or if it has actual filter fields
+  const paginationSortKeys = ["asc", "desc", "limit", "offset", "count", "fetchAll"];
+  const advancedOptionsKeys = [...paginationSortKeys, "filters"];
+  
   const inputKeys = Object.keys(input || {});
-  const isAdvanced = inputKeys.some((k) =>
-    possibleAdvancedKeys.includes(k as keyof AdvancedQuickbooksSearchOptions)
-  );
+  
+  // If it has 'filters' key, it's definitely advanced format
+  if ('filters' in input) {
+    // Advanced format with filters
+    const options = input as AdvancedQuickbooksSearchOptions;
+    const criteriaArr: Array<Record<string, any>> = [];
 
-  if (!isAdvanced) {
-    // simple criteria object – pass through
-    return input as Record<string, any>;
+    // Convert filters
+    options.filters?.forEach((f) => {
+      criteriaArr.push({ field: f.field, value: f.value, operator: f.operator });
+    });
+
+    // Add pagination/sorting
+    if (options.asc) criteriaArr.push({ field: "asc", value: options.asc });
+    if (options.desc) criteriaArr.push({ field: "desc", value: options.desc });
+    if (typeof options.limit === "number") criteriaArr.push({ field: "limit", value: options.limit });
+    if (typeof options.offset === "number") criteriaArr.push({ field: "offset", value: options.offset });
+    if (options.count) criteriaArr.push({ field: "count", value: true });
+    if (options.fetchAll) criteriaArr.push({ field: "fetchAll", value: true });
+
+    return criteriaArr.length > 0 ? criteriaArr : {};
+  }
+  
+  // Check if ALL keys are pagination/sorting keys (no actual filter fields)
+  const allKeysPaginationSort = inputKeys.every(k => paginationSortKeys.includes(k));
+  
+  if (allKeysPaginationSort && inputKeys.length > 0) {
+    // Only pagination/sorting, no filters - convert to array format
+    const options = input as AdvancedQuickbooksSearchOptions;
+    const criteriaArr: Array<Record<string, any>> = [];
+    
+    if (options.asc) criteriaArr.push({ field: "asc", value: options.asc });
+    if (options.desc) criteriaArr.push({ field: "desc", value: options.desc });
+    if (typeof options.limit === "number") criteriaArr.push({ field: "limit", value: options.limit });
+    if (typeof options.offset === "number") criteriaArr.push({ field: "offset", value: options.offset });
+    if (options.count) criteriaArr.push({ field: "count", value: true });
+    if (options.fetchAll) criteriaArr.push({ field: "fetchAll", value: true });
+    
+    return criteriaArr.length > 0 ? criteriaArr : {};
+  }
+  
+  // Check if it has SOME pagination/sorting keys mixed with filter fields
+  const hasPaginationSortKeys = inputKeys.some(k => paginationSortKeys.includes(k));
+  const hasFilterKeys = inputKeys.some(k => !advancedOptionsKeys.includes(k));
+  
+  if (hasPaginationSortKeys && hasFilterKeys) {
+    // Mixed format: some filter fields + pagination/sorting
+    // This is ambiguous, but we'll treat non-pagination keys as filters
+    const criteriaArr: Array<Record<string, any>> = [];
+    
+    Object.entries(input).forEach(([key, value]) => {
+      if (key === "asc") {
+        criteriaArr.push({ field: "asc", value });
+      } else if (key === "desc") {
+        criteriaArr.push({ field: "desc", value });
+      } else if (key === "limit") {
+        criteriaArr.push({ field: "limit", value });
+      } else if (key === "offset") {
+        criteriaArr.push({ field: "offset", value });
+      } else if (key === "count") {
+        criteriaArr.push({ field: "count", value: true });
+      } else if (key === "fetchAll") {
+        criteriaArr.push({ field: "fetchAll", value: true });
+      } else {
+        // Regular filter field
+        criteriaArr.push({ field: key, value, operator: "=" });
+      }
+    });
+    
+    return criteriaArr.length > 0 ? criteriaArr : {};
   }
 
-  // At this point we treat the input as AdvancedQuickbooksSearchOptions
-  const options = input as AdvancedQuickbooksSearchOptions;
-  const criteriaArr: Array<Record<string, any>> = [];
-
-  // Convert filters
-  options.filters?.forEach((f) => {
-    criteriaArr.push({ field: f.field, value: f.value, operator: f.operator });
-  });
-
-  // Sorting
-  if (options.asc) {
-    criteriaArr.push({ field: "asc", value: options.asc });
-  }
-  if (options.desc) {
-    criteriaArr.push({ field: "desc", value: options.desc });
-  }
-
-  // Pagination / meta
-  if (typeof options.limit === "number") {
-    criteriaArr.push({ field: "limit", value: options.limit });
-  }
-  if (typeof options.offset === "number") {
-    criteriaArr.push({ field: "offset", value: options.offset });
-  }
-  if (options.count) {
-    criteriaArr.push({ field: "count", value: true });
-  }
-  if (options.fetchAll) {
-    criteriaArr.push({ field: "fetchAll", value: true });
-  }
-
-  // If nothing ended up in the array, return empty object so Quickbooks returns all items.
-  return criteriaArr.length > 0 ? criteriaArr : {};
-} 
+  // Simple criteria object with only filter fields – pass through as-is
+  return input as Record<string, any>;
+}
+ 

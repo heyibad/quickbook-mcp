@@ -3,8 +3,54 @@ import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
 
 const toolName = "delete-bill";
-const toolTitle = "Delete-bill";
-const toolDescription = "Delete a bill in QuickBooks Online.";
+const toolTitle = "Delete Bill";
+const toolDescription = `Delete a bill from QuickBooks Online. Use with caution as this removes the bill record.
+
+**Why use this tool:**
+- Remove bills entered in error
+- Clean up duplicate bill entries
+- Delete test bills
+- Remove bills that were entered incorrectly
+
+**When to use:**
+- Bill was created by mistake
+- Duplicate bill entry needs to be removed
+- Test or demo bills need cleanup
+- Bill is no longer valid or relevant
+
+**Important notes:**
+- Cannot delete bills that have been paid
+- Cannot delete bills with linked transactions
+- Requires bill Id and SyncToken
+- This action cannot be undone
+- Consider voiding instead of deleting for audit trails
+
+**Parameters:**
+- bill (required): Bill object with:
+  - Id (required): Bill's QuickBooks ID
+  - SyncToken (required): Current sync token
+
+**Example usage:**
+1. Delete bill with ID and SyncToken:
+   {
+     "bill": {
+       "Id": "126",
+       "SyncToken": "0"
+     }
+   }
+
+2. Delete bill after retrieving details:
+   // First get bill: get-bill with id="145"
+   // Then delete with returned object
+   {
+     "bill": {
+       "Id": "145",
+       "SyncToken": "1"
+     }
+   }
+
+**Returns:**
+- Success status and deleted bill information`;
 const inputSchema = {
   bill: z.object({
     Id: z.string(),

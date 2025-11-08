@@ -1,56 +1,7 @@
-import { getQuickBooksCredentials } from "../helpers/request-context.js";
-import {
-    makeQuickBooksRequest,
-    queryQuickBooks,
-} from "../helpers/quickbooks-api.js";
-import { ToolResponse } from "../types/tool-response.js";
-import { formatError } from "../helpers/format-error.js";
+import { deleteEntityHandler } from "../helpers/handler-factory.js";
+import { ENTITY_CONFIGS } from "../helpers/entity-configs.js";
 
 /**
- * Delete a bill in QuickBooks Online
+ * Delete bill in QuickBooks Online
  */
-export async function deleteQuickbooksBill(
-    bill: any
-): Promise<ToolResponse<any>> {
-    try {
-        // Get credentials from request headers
-        const { accessToken, realmId } = getQuickBooksCredentials();
-
-        // Convert entity object to ID and SyncToken if needed
-        let deleteBody: any;
-        if (typeof bill === "object" && bill.Id) {
-            deleteBody = { Id: bill.Id, SyncToken: bill.SyncToken };
-        } else {
-            deleteBody = bill;
-        }
-
-        const response = await makeQuickBooksRequest({
-            method: "POST",
-            endpoint: "/bill",
-            body: deleteBody,
-            queryParams: { operation: "delete" },
-            accessToken,
-            realmId,
-        });
-
-        if (response.isError) {
-            return {
-                result: null,
-                isError: true,
-                error: response.error || "Failed to delete bill",
-            };
-        }
-
-        return {
-            result: response.result?.Bill,
-            isError: false,
-            error: null,
-        };
-    } catch (error) {
-        return {
-            result: null,
-            isError: true,
-            error: formatError(error),
-        };
-    }
-}
+export const deleteQuickbooksBill = deleteEntityHandler(ENTITY_CONFIGS.bill);

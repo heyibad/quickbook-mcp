@@ -759,17 +759,15 @@ async function testAllTools(config: TestConfig) {
         logResult("Update Vendor", "SKIP", "No vendors available", 0);
     }
 
-    // Test Update Account (using patch method)
+    // Test Update Account (requires full account object with SyncToken)
     if (prereqData.accounts.length > 0) {
         try {
             const account = prereqData.accounts[0];
             const start = Date.now();
             const result = await runInContext(config, () =>
                 updateQuickbooksAccount({
-                    account_id: account.Id,
-                    patch: {
-                        Description: `Test update at ${new Date().toISOString()}`,
-                    },
+                    ...account,
+                    Description: `Test update at ${new Date().toISOString()}`,
                 })
             );
             const duration = Date.now() - start;

@@ -4,7 +4,66 @@ import { z } from "zod";
 
 const toolName = "delete_estimate";
 const toolTitle = "Delete Estimate";
-const toolDescription = "Delete (void) an estimate in QuickBooks Online.";
+const toolDescription = `Delete (void) a sales estimate from QuickBooks Online. This removes the estimate but maintains record in audit trail. Requires ID and SyncToken.
+
+**Why use this tool:**
+- Remove estimates entered in error
+- Void declined or expired quotes
+- Clean up old estimates
+- Delete duplicate estimate entries
+- Remove estimates created for testing
+- Void estimates never sent to customer
+
+**When to use:**
+- Estimate was created in error
+- Customer declined and won't be using quote
+- Estimate is expired and no longer valid
+- Cleaning up old or unused estimates
+- Need to remove duplicate entries
+- Estimate was for testing purposes
+
+**Required Parameters:**
+- idOrEntity: Either:
+  - String: Just the estimate ID (requires separate SyncToken parameter)
+  - Object: Complete estimate object with Id and SyncToken
+
+**Important:**
+- Cannot delete estimates already converted to invoices
+- Always get current SyncToken before deleting
+- Deletion is permanent but appears in audit trail
+- Consider marking as "Closed" instead if want to keep record
+
+**Example usage:**
+1. Delete by ID and SyncToken:
+   {
+     "idOrEntity": "145",
+     "syncToken": "3"
+   }
+
+2. Delete using estimate object:
+   {
+     "idOrEntity": {
+       "Id": "145",
+       "SyncToken": "3"
+     }
+   }
+
+3. Delete old estimate:
+   {
+     "idOrEntity": "234",
+     "syncToken": "1"
+   }
+
+**Returns:**
+- Deleted Estimate object with status "Deleted"
+- Confirmation of deletion
+- Original estimate details for reference
+
+**Alternative Approach:**
+Instead of deleting, consider updating TxnStatus:
+- Set TxnStatus to "Closed" to keep estimate but mark inactive
+- Set TxnStatus to "Rejected" if customer declined
+- This maintains better audit trail than deletion`;
 const inputSchema = {
     idOrEntity: z
         .any()

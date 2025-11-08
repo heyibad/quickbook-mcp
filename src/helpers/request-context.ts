@@ -46,13 +46,6 @@ export function getRequestHeaders(): Record<
     string | string[] | undefined
 > {
     const context = getRequestContext();
-
-    // Debug logging
-    console.log(
-        "[DEBUG] Request headers:",
-        JSON.stringify(context.headers, null, 2)
-    );
-
     return context.headers;
 }
 

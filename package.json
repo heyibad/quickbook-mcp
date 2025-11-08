@@ -3,22 +3,21 @@
     "version": "0.0.1",
     "description": "MCP server implementation for QuickBooks Online integration",
     "license": "MIT",
-    "main": "dist/index.js",
+    "main": "dist/src/index.js",
     "type": "module",
-    "bin": "./dist/index.js",
+    "bin": "./dist/src/index.js",
     "files": [
         "dist"
     ],
     "scripts": {
-        "build": "tsc && shx chmod +x dist/*.js",
+        "build": "tsc && shx chmod +x dist/src/*.js",
         "prepare": "npm run build",
         "watch": "tsc --watch",
         "lint:fix": "eslint --fix",
         "lint": "eslint .",
-        "auth": "node dist/auth-server.js",
-        "start": "node dist/index.js",
-        "test": "npm run build && node dist/test-all-tools.js",
-        "test:ts": "npx ts-node test-all-tools.ts"
+        "auth": "node dist/src/auth-server.js",
+        "start": "node dist/src/index.js",
+        "test": "npm run build && node run-tests.js"
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.20.2",

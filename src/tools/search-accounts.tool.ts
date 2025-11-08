@@ -4,7 +4,101 @@ import { z } from "zod";
 
 const toolName = "search_accounts";
 const toolTitle = "Search Accounts";
-const toolDescription = "Search chart‑of‑accounts entries using criteria.";
+const toolDescription = `Search and filter Chart of Accounts entries in QuickBooks Online by account type, name, classification, and other criteria.
+
+**Why use this tool:**
+- Find accounts for categorizing transactions
+- Get list of expense accounts for bill/purchase line items
+- Search for income accounts for invoice line items
+- Find asset, liability, or equity accounts for journal entries
+- Filter accounts by type (Bank, Income, Expense, etc.)
+- Build account selection dropdowns
+
+**When to use:**
+- Finding the correct account for transaction line items
+- Building chart of accounts reports
+- Searching for specific account by name or number
+- Getting accounts of a specific type (e.g., all expense accounts)
+- Verifying account existence before transactions
+- Creating account selection interfaces
+
+
+**IMPORTANT - Three Input Formats:**
+
+Format 1 - Pagination only: { "limit": 10, "desc": "MetaData.CreateTime" }
+Format 2 - Array with operators: [{ "field": "FieldName", "value": "value", "operator": ">" }, { "field": "limit", "value": 10 }]
+Format 3 - Advanced with filters key: { "filters": [{ "field": "FieldName", "value": "value", "operator": ">" }], "limit": 10 }
+
+**CRITICAL RULES:**
+1. For pagination ONLY, use Format 1 or Format 3 with empty filters
+2. For simple filters WITHOUT pagination, use: { "FieldName": "value" }
+3. NEVER mix filter fields with reserved keywords (limit, offset, asc, desc, count, fetchAll, filters) in simple object format
+4. When combining filters with pagination, use Format 2 (array) or Format 3 (filters key)
+5. For operators (>, <, >=, <=, LIKE, IN), use Format 2 or Format 3
+
+**Reserved Keywords:** limit, offset, asc, desc, count, fetchAll, filters
+
+See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
+
+
+**Parameters:**
+- criteria (optional): Array of filter objects OR simple key-value object
+  - Simple format: { "AccountType": "Expense", "limit": 50 }
+  - Advanced format: [{ "field": "Name", "value": "Office", "operator": "LIKE" }]
+- limit (optional): Maximum number of results
+- offset (optional): Number of records to skip
+- asc/desc (optional): Sort field
+
+**Supported fields:**
+- Id, Name, AcctNum (account number)
+- AccountType (Bank, Other Current Asset, Fixed Asset, Other Asset, Accounts Receivable, Equity, Expense, Other Expense, Cost of Goods Sold, Accounts Payable, Credit Card, Long Term Liability, Other Current Liability, Income, Other Income)
+- AccountSubType (more specific classification)
+- Classification (Asset, Liability, Equity, Revenue, Expense)
+- Active (true/false)
+- CurrentBalance
+- MetaData.CreateTime, MetaData.LastUpdatedTime
+
+**Example usage:**
+1. Get all active expense accounts:
+   {
+     "criteria": [
+       { "field": "AccountType", "value": "Expense" },
+       { "field": "Active", "value": true }
+     ],
+     "asc": "Name"
+   }
+
+2. Search accounts by name:
+   {
+     "criteria": [
+       { "field": "Name", "value": "Office", "operator": "LIKE" }
+     ]
+   }
+
+3. Find bank accounts:
+   {
+     "criteria": [
+       { "field": "AccountType", "value": "Bank" }
+     ]
+   }
+
+4. Get income accounts for invoices:
+   {
+     "criteria": [
+       { "field": "Classification", "value": "Revenue" },
+       { "field": "Active", "value": true }
+     ]
+   }
+
+5. Search by account number:
+   {
+     "criteria": [
+       { "field": "AcctNum", "value": "1000" }
+     ]
+   }
+
+**Returns:**
+- Array of account objects with Id, Name, AccountType, CurrentBalance, and other account details`;
 
 // Allowed field lists based on QuickBooks Online Account entity documentation. Only these can be
 // used in the search criteria.

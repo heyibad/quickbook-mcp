@@ -4,8 +4,96 @@ import { z } from "zod";
 
 const toolName = "search_vendors";
 const toolTitle = "Search Vendors";
-const toolDescription =
-    "Search vendors in QuickBooks Online that match given criteria.";
+const toolDescription = `Search and filter vendors in QuickBooks Online using various criteria like name, email, company, balance, 1099 status, and more. Supports advanced filtering with operators and pagination.
+
+**Why use this tool:**
+- Find vendors by name, email, or company before creating bills
+- Get list of vendors for dropdown menus or selection lists
+- Find 1099 contractors for tax reporting
+- Search for vendors with outstanding balances
+- Filter vendors by active/inactive status
+- Generate vendor reports and analytics
+
+**When to use:**
+- Need to find a vendor by name before creating a bill
+- Building a vendor selection interface
+- Searching for 1099 contractors for year-end reporting
+- Getting list of active vendors for expense tracking
+- Finding vendors with specific characteristics
+- Verifying if a vendor exists before creating a new one
+
+
+**IMPORTANT - Three Input Formats:**
+
+Format 1 - Pagination only: { "limit": 10, "desc": "MetaData.CreateTime" }
+Format 2 - Array with operators: [{ "field": "FieldName", "value": "value", "operator": ">" }, { "field": "limit", "value": 10 }]
+Format 3 - Advanced with filters key: { "filters": [{ "field": "FieldName", "value": "value", "operator": ">" }], "limit": 10 }
+
+**CRITICAL RULES:**
+1. For pagination ONLY, use Format 1 or Format 3 with empty filters
+2. For simple filters WITHOUT pagination, use: { "FieldName": "value" }
+3. NEVER mix filter fields with reserved keywords (limit, offset, asc, desc, count, fetchAll, filters) in simple object format
+4. When combining filters with pagination, use Format 2 (array) or Format 3 (filters key)
+5. For operators (>, <, >=, <=, LIKE, IN), use Format 2 or Format 3
+
+**Reserved Keywords:** limit, offset, asc, desc, count, fetchAll, filters
+
+See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
+
+
+**Parameters:**
+- criteria (optional): Array of filter objects OR simple key-value object
+  - Simple format: { "Active": true, "limit": 10 }
+  - Advanced format: [{ "field": "DisplayName", "value": "Tech", "operator": "LIKE" }]
+- limit (optional): Maximum number of results
+- offset (optional): Number of records to skip for pagination
+- asc/desc (optional): Field name to sort by
+
+**Supported fields:**
+- Id, DisplayName, GivenName, FamilyName, CompanyName
+- PrimaryEmailAddr, PrimaryPhone
+- Balance, Active, Vendor1099
+- MetaData.CreateTime, MetaData.LastUpdatedTime
+
+**Operators:**
+- = (equals), < (less than), > (greater than)
+- <= (less than or equal), >= (greater than or equal)
+- LIKE (partial match), IN (list of values)
+
+**Example usage:**
+1. Get all active vendors (limit 10):
+   { "criteria": { "Active": true, "limit": 10 } }
+
+2. Search by name (partial match):
+   {
+     "criteria": [
+       { "field": "DisplayName", "value": "Tech", "operator": "LIKE" }
+     ]
+   }
+
+3. Find 1099 contractors:
+   {
+     "criteria": [
+       { "field": "Vendor1099", "value": true }
+     ]
+   }
+
+4. Find vendors with balance > 0:
+   {
+     "criteria": [
+       { "field": "Balance", "value": "0", "operator": ">" }
+     ]
+   }
+
+5. Search by email:
+   {
+     "criteria": [
+       { "field": "PrimaryEmailAddr", "value": "billing@", "operator": "LIKE" }
+     ]
+   }
+
+**Returns:**
+- Array of vendor objects matching the criteria`;
 
 // A subset of commonly-used Vendor fields that can be filtered on.
 // This is *not* an exhaustive list, but provides helpful IntelliSense / docs

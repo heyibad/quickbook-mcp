@@ -1,44 +1,7 @@
-import { getQuickBooksCredentials } from "../helpers/request-context.js";
-import { makeQuickBooksRequest } from "../helpers/quickbooks-api.js";
-import { ToolResponse } from "../types/tool-response.js";
-import { formatError } from "../helpers/format-error.js";
+import { createEntityHandler } from "../helpers/handler-factory.js";
+import { ENTITY_CONFIGS } from "../helpers/entity-configs.js";
 
 /**
- * Create a bill in QuickBooks Online
+ * Create bill in QuickBooks Online
  */
-export async function createQuickbooksBill(
-    bill: any
-): Promise<ToolResponse<any>> {
-    try {
-        // Get credentials from request headers
-        const { accessToken, realmId } = getQuickBooksCredentials();
-
-        const response = await makeQuickBooksRequest({
-            method: "POST",
-            endpoint: "/bill",
-            body: bill,
-            accessToken,
-            realmId,
-        });
-
-        if (response.isError) {
-            return {
-                result: null,
-                isError: true,
-                error: response.error || "Failed to create bill",
-            };
-        }
-
-        return {
-            result: response.result?.Bill,
-            isError: false,
-            error: null,
-        };
-    } catch (error) {
-        return {
-            result: null,
-            isError: true,
-            error: formatError(error),
-        };
-    }
-}
+export const createQuickbooksBill = createEntityHandler(ENTITY_CONFIGS.bill);

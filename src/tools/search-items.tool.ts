@@ -4,8 +4,127 @@ import { z } from "zod";
 
 const toolName = "search_items";
 const toolTitle = "Search Items";
-const toolDescription =
-    "Search items in QuickBooks Online using criteria (maps to node-quickbooks findItems).";
+const toolDescription = `Search and filter products and service items in QuickBooks Online using various criteria like name, type, price, and more. Supports advanced filtering, sorting, and pagination.
+
+**Why use this tool:**
+- Find items by name or description
+- Filter items by type (Service, Inventory, NonInventory)
+- Search for active items only
+- Get items within price ranges
+- List inventory items with quantities
+- Build item catalogs for invoicing
+
+**When to use:**
+- Building item dropdowns for invoices/estimates
+- Searching for specific products or services
+- Generating product catalogs
+- Finding items by type or category
+- Listing active vs inactive items
+- Creating inventory reports
+
+**IMPORTANT - Three Input Formats:**
+
+Format 1 - Pagination only: { "limit": 10, "desc": "MetaData.CreateTime" }
+Format 2 - Array with operators: [{ "field": "Type", "value": "Service" }, { "field": "limit", "value": 10 }]
+Format 3 - Advanced with filters key: { "filters": [{ "field": "Type", "value": "Service" }], "limit": 10 }
+
+**CRITICAL RULES:**
+1. For pagination ONLY, use Format 1 or Format 3 with empty filters
+2. For simple filters WITHOUT pagination, use: { "FieldName": "value" }
+3. NEVER mix filter fields with reserved keywords (limit, offset, asc, desc, count, fetchAll, filters) in simple object format
+4. When combining filters with pagination, use Format 2 (array) or Format 3 (filters key)
+5. For operators (>, <, >=, <=, LIKE, IN), use Format 2 or Format 3
+
+**Reserved Keywords:** limit, offset, asc, desc, count, fetchAll, filters
+
+See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
+
+
+**Parameters:**
+- criteria (optional): Array of filter objects OR simple key-value object
+- limit (optional): Maximum number of results
+- offset (optional): Number of records to skip for pagination
+- asc/desc (optional): Field name to sort by
+
+**Supported fields:**
+- Name, Description, Type
+- UnitPrice, PurchaseCost
+- QtyOnHand (for Inventory items)
+- Active (true/false)
+- Taxable
+- Sku
+- IncomeAccountRef, ExpenseAccountRef, AssetAccountRef
+- MetaData.CreateTime, MetaData.LastUpdatedTime
+
+**Operators:**
+- = (equals), < (less than), > (greater than)
+- <= (less than or equal), >= (greater than or equal)
+- LIKE (partial match), IN (list of values)
+
+**Item Types:**
+- Service: Service offerings
+- Inventory: Physical products with quantity tracking
+- NonInventory: Products sold without quantity tracking
+- Category: For organizing items
+
+**Example usage:**
+1. Get all active items:
+   {
+     "criteria": [
+       { "field": "Active", "value": "true" }
+     ],
+     "asc": "Name"
+   }
+
+2. Search by name:
+   {
+     "criteria": [
+       { "field": "Name", "value": "Widget", "operator": "LIKE" }
+     ]
+   }
+
+3. Find service items:
+   {
+     "criteria": [
+       { "field": "Type", "value": "Service" },
+       { "field": "Active", "value": "true" }
+     ],
+     "desc": "UnitPrice"
+   }
+
+4. Find inventory items:
+   {
+     "criteria": [
+       { "field": "Type", "value": "Inventory" }
+     ],
+     "asc": "Name"
+   }
+
+5. Find items by price range:
+   {
+     "criteria": [
+       { "field": "UnitPrice", "value": "50", "operator": ">=" },
+       { "field": "UnitPrice", "value": "200", "operator": "<=" }
+     ]
+   }
+
+6. Find low stock items:
+   {
+     "criteria": [
+       { "field": "Type", "value": "Inventory" },
+       { "field": "QtyOnHand", "value": "10", "operator": "<" }
+     ],
+     "asc": "QtyOnHand"
+   }
+
+7. Get all items (limit 50):
+   { "criteria": {}, "limit": 50 }
+
+**Returns:**
+- Array of Item objects matching criteria
+- Each item includes name, type, pricing, descriptions
+- Account references and inventory quantities
+- Active status and taxable information`;
 
 // Allowed field lists derived from QuickBooks Online Item entity documentation (Filterable/Sortable columns)
 const ALLOWED_FILTER_FIELDS = [

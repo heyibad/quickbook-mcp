@@ -4,7 +4,47 @@ import { z } from "zod";
 
 const toolName = "read_item";
 const toolTitle = "Read Item";
-const toolDescription = "Read a single item in QuickBooks Online by its ID.";
+const toolDescription = `Retrieve a specific product or service item by its ID from QuickBooks Online. Returns complete item details including pricing, description, and account references.
+
+**Why use this tool:**
+- View item details and pricing
+- Get item information for invoice/estimate creation
+- Verify item configuration
+- Check inventory quantities
+- Display item details in applications
+- Review item account assignments
+
+**When to use:**
+- Displaying item information in your application
+- Before adding item to invoice or estimate
+- Checking current item pricing
+- Verifying inventory levels
+- Reviewing item account setup
+- Getting item details for reports
+
+**Required Parameters:**
+- item_id: The QuickBooks ID of the item to retrieve
+
+**Example usage:**
+1. Get item by ID:
+   { "item_id": "25" }
+
+2. Retrieve inventory item details:
+   { "item_id": "42" }
+
+3. Get service item pricing:
+   { "item_id": "89" }
+
+**Returns:**
+- Complete Item object
+- Item details: Name, Description, Type
+- Pricing: UnitPrice, PurchaseCost
+- Account references: IncomeAccountRef, ExpenseAccountRef, AssetAccountRef
+- Inventory: QtyOnHand, InvStartDate (for Inventory items)
+- Active status
+- MetaData with creation and update timestamps
+- SyncToken for future updates
+- Taxable status and tax code references`;
 
 const inputSchema = {
   item_id: z.string().min(1, { message: "Item ID is required" }),

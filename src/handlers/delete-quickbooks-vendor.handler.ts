@@ -1,53 +1,7 @@
-import { getQuickBooksCredentials } from "../helpers/request-context.js";
-import { makeQuickBooksRequest } from "../helpers/quickbooks-api.js";
-import { ToolResponse } from "../types/tool-response.js";
-import { formatError } from "../helpers/format-error.js";
+import { deleteEntityHandler } from "../helpers/handler-factory.js";
+import { ENTITY_CONFIGS } from "../helpers/entity-configs.js";
 
 /**
- * Delete a vendor in QuickBooks Online
+ * Delete vendor in QuickBooks Online
  */
-export async function deleteQuickbooksVendor(
-    vendor: any
-): Promise<ToolResponse<any>> {
-    try {
-        // Get credentials from request headers
-        const { accessToken, realmId } = getQuickBooksCredentials();
-
-        // Convert entity object to ID and SyncToken if needed
-        let deleteBody: any;
-        if (typeof vendor === "object" && vendor.Id) {
-            deleteBody = { Id: vendor.Id, SyncToken: vendor.SyncToken };
-        } else {
-            deleteBody = vendor;
-        }
-
-        const response = await makeQuickBooksRequest({
-            method: "POST",
-            endpoint: "/vendor",
-            body: deleteBody,
-            queryParams: { operation: "delete" },
-            accessToken,
-            realmId,
-        });
-
-        if (response.isError) {
-            return {
-                result: null,
-                isError: true,
-                error: response.error || "Failed to delete vendor",
-            };
-        }
-
-        return {
-            result: response.result?.Vendor,
-            isError: false,
-            error: null,
-        };
-    } catch (error) {
-        return {
-            result: null,
-            isError: true,
-            error: formatError(error),
-        };
-    }
-}
+export const deleteQuickbooksVendor = deleteEntityHandler(ENTITY_CONFIGS.vendor);

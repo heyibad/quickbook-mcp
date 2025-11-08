@@ -142,18 +142,11 @@ export async function makeQuickBooksRequest<T = any>(
 export function extractAccessToken(
     headers: Record<string, string | string[] | undefined>
 ): string | undefined {
-    // Debug logging
-    console.log("[DEBUG] Extracting token from headers:", Object.keys(headers));
-
     // Check for Authorization header (most common)
     const authHeader = headers["authorization"] || headers["Authorization"];
 
     if (authHeader) {
         const token = Array.isArray(authHeader) ? authHeader[0] : authHeader;
-        console.log(
-            "[DEBUG] Found Authorization header:",
-            token?.substring(0, 50) + "..."
-        );
         // Remove "Bearer " prefix if present
         return token.replace(/^Bearer\s+/i, "");
     }
@@ -165,14 +158,9 @@ export function extractAccessToken(
         const token = Array.isArray(customHeader)
             ? customHeader[0]
             : customHeader;
-        console.log(
-            "[DEBUG] Found X-QuickBooks-Token header:",
-            token?.substring(0, 50) + "..."
-        );
         return token;
     }
 
-    console.log("[DEBUG] No access token found in headers");
     return undefined;
 }
 
