@@ -6,6 +6,9 @@ const toolName = "get-bill";
 const toolTitle = "Get Bill";
 const toolDescription = `Retrieve detailed information about a specific bill from QuickBooks Online using its unique ID.
 
+** It Get or Search for a Bill **
+**Entity Type:** BILL (vendor invoice/payable)
+
 **Why use this tool:**
 - Get complete bill details including line items, amounts, and due dates
 - Verify bill existence before making payments
@@ -14,10 +17,12 @@ const toolDescription = `Retrieve detailed information about a specific bill fro
 - Review bill line items and expense allocations
 
 **When to use:**
-- Before processing a bill payment
+- When Need a Bill
+- When you need to verify bill details before making a payment
+- Before processing a bill payment (need bill ID and sync token)
 - When displaying bill details in your application
 - To verify bill information before updates
-- When updating bill records (need current SyncToken)
+- When you have a bill ID and need full bill details
 - Checking bill payment status and due dates
 
 **Parameters:**
