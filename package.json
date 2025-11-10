@@ -9,9 +9,14 @@
     "files": [
         "dist"
     ],
+    "engines": {
+        "node": ">=18.x",
+        "npm": ">=9.x"
+    },
     "scripts": {
         "build": "tsc && shx chmod +x dist/src/*.js",
         "prepare": "npm run build",
+        "postinstall": "npm run build",
         "watch": "tsc --watch",
         "lint:fix": "eslint --fix",
         "lint": "eslint .",

@@ -1,0 +1,26 @@
+{
+  "name": "QuickBooks Online MCP Server",
+  "description": "MCP server implementation for QuickBooks Online integration",
+  "repository": "https://github.com/heyibad/quickbook-mcp",
+  "keywords": ["quickbooks", "mcp", "api", "accounting"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "QUICKBOOKS_CLIENT_ID": {
+      "description": "Your QuickBooks Client ID from the Intuit Developer Portal",
+      "required": true
+    },
+    "QUICKBOOKS_CLIENT_SECRET": {
+      "description": "Your QuickBooks Client Secret from the Intuit Developer Portal",
+      "required": true
+    },
+    "QUICKBOOKS_ENVIRONMENT": {
+      "description": "QuickBooks environment (sandbox or production)",
+      "value": "sandbox",
+      "required": true
+    }
+  }
+}
