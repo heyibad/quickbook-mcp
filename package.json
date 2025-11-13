@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.20.2",
+        "cors": "^2.8.5",
         "dotenv": "^16.4.7",
         "express": "^5.1.0",
         "intuit-oauth": "^4.0.0",
@@ -36,6 +37,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.22.0",
+        "@types/cors": "^2.8.19",
         "@types/express": "^5.0.4",
         "@types/node": "^22.13.10",
         "eslint": "^9.22.0",

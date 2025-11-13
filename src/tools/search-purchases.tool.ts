@@ -122,7 +122,15 @@ See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
 
 // Define the expected input schema for searching purchases
 const inputSchema = {
-    criteria: z.array(z.any()).optional(),
+    criteria: z
+        .array(
+            z.object({
+                field: z.string().optional(),
+                value: z.any().optional(),
+                operator: z.string().optional(),
+            })
+        )
+        .optional(),
     asc: z.string().optional(),
     desc: z.string().optional(),
     limit: z.number().optional(),

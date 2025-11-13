@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import express, { Request, Response } from "express";
+import cors from "cors";
 import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
@@ -165,6 +166,15 @@ const main = async () => {
 
     // Create Express app to handle HTTP requests
     const app = express();
+    
+    // Enable CORS for all origins (customize as needed)
+    app.use(cors({
+        origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+        credentials: true
+    }));
+    
     app.use(express.json());
 
     // Handle POST/GET/DELETE requests for Streamable HTTP transport

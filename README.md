@@ -23,6 +23,10 @@ npm install
 QUICKBOOKS_CLIENT_ID=your_client_id
 QUICKBOOKS_CLIENT_SECRET=your_client_secret
 QUICKBOOKS_ENVIRONMENT=sandbox
+
+# Optional: Configure CORS (Cross-Origin Resource Sharing)
+# Leave empty or omit to allow all origins (use * wildcard)
+# ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://yourdomain.com
 ```
 
 3. Get your Client ID and Client Secret:
