@@ -63,7 +63,42 @@ const toolDescription = `Create a new customer record in QuickBooks Online with 
 
 // Define the expected input schema for creating a customer
 const inputSchema = {
-    customer: z.any(),
+    customer: z
+        .object({
+            DisplayName: z.string().describe("Customer name for display on invoices and reports (REQUIRED)"),
+            GivenName: z.string().optional().describe("Customer's first name"),
+            FamilyName: z.string().optional().describe("Customer's last name"),
+            CompanyName: z.string().optional().describe("Company name"),
+            PrimaryEmailAddr: z
+                .object({
+                    Address: z.string().describe("Email address"),
+                })
+                .optional()
+                .describe("Primary email address"),
+            PrimaryPhone: z
+                .object({
+                    FreeFormNumber: z.string().describe("Phone number in any format"),
+                })
+                .optional()
+                .describe("Primary phone number"),
+            BillAddr: z
+                .object({
+                    Line1: z.string().optional(),
+                    Line2: z.string().optional(),
+                    Line3: z.string().optional(),
+                    Line4: z.string().optional(),
+                    Line5: z.string().optional(),
+                    City: z.string().optional(),
+                    CountrySubDivisionCode: z.string().optional().describe("State/Province code (e.g., 'CA', 'NY')"),
+                    PostalCode: z.string().optional(),
+                    Country: z.string().optional(),
+                })
+                .optional()
+                .describe("Billing address"),
+            Notes: z.string().optional().describe("Internal notes about the customer"),
+        })
+        .passthrough()
+        .describe("Customer object with contact and billing information. Only DisplayName is required."),
 };
 
 const outputSchema = {

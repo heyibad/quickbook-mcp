@@ -20,10 +20,12 @@ const toolDescription = `Update an existing customer's information in QuickBooks
 - Customer requests to update their information
 - Before creating new transactions with updated customer details
 
-**Important:** 
-- You MUST include the customer's current SyncToken (get it first using get_customer)
-- Include the Id field to identify which customer to update
-- Only include fields you want to change (partial updates supported)
+**Important - READ CAREFULLY:** 
+- **REQUIRED**: Customer's Id (string like "58" or "142")
+- **REQUIRED**: Current SyncToken (string like "0", "1", "2") - Get this first using get_customer tool
+- **Workflow**: Always call get_customer first to retrieve current data including SyncToken, then modify fields and call update
+- **Partial updates**: You can update only specific fields without sending the entire customer object
+- **SyncToken purpose**: Prevents concurrent modification conflicts - QuickBooks increments it on each update
 
 **Parameters:**
 - customer (required): Customer object with:
@@ -70,7 +72,39 @@ const toolDescription = `Update an existing customer's information in QuickBooks
 - Updated customer object with new SyncToken`;
 
 const inputSchema = {
-    customer: z.any().describe("Customer object with updated fields"),
+    customer: z
+        .object({
+            Id: z.string().describe("QuickBooks customer ID (REQUIRED) - e.g., '58', '142'"),
+            SyncToken: z.string().describe("Current sync token (REQUIRED) - Get from get_customer first"),
+            DisplayName: z.string().optional().describe("Customer display name"),
+            GivenName: z.string().optional().describe("First name"),
+            FamilyName: z.string().optional().describe("Last name"),
+            CompanyName: z.string().optional().describe("Company name"),
+            PrimaryEmailAddr: z
+                .object({
+                    Address: z.string(),
+                })
+                .optional()
+                .describe("Primary email"),
+            PrimaryPhone: z
+                .object({
+                    FreeFormNumber: z.string(),
+                })
+                .optional()
+                .describe("Primary phone"),
+            BillAddr: z
+                .object({
+                    Line1: z.string().optional(),
+                    City: z.string().optional(),
+                    CountrySubDivisionCode: z.string().optional(),
+                    PostalCode: z.string().optional(),
+                })
+                .optional()
+                .describe("Billing address"),
+            Notes: z.string().optional().describe("Customer notes"),
+        })
+        .passthrough()
+        .describe("Customer object with Id, SyncToken (both required), and fields to update"),
 };
 
 const outputSchema = {

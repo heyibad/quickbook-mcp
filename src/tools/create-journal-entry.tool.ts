@@ -147,7 +147,32 @@ const toolDescription = `Create a journal entry in QuickBooks Online for manual 
 
 // Define the expected input schema for creating a journal entry
 const inputSchema = {
-    journalEntry: z.any(),
+  journalEntry: z
+    .object({
+      TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
+      PrivateNote: z.string().optional().describe("Internal note"),
+      DocNumber: z.string().optional().describe("Journal entry number"),
+      Adjustment: z.boolean().optional().describe("Whether this is an adjusting entry"),
+      Line: z
+        .array(
+          z.object({
+            DetailType: z.string().describe("Should be 'JournalEntryLineDetail'"),
+            Amount: z.number().describe("Line amount (positive)"),
+            Description: z.string().optional(),
+            JournalEntryLineDetail: z
+              .object({
+                PostingType: z.enum(["Debit", "Credit"]).describe("Posting type"),
+                AccountRef: z.object({ value: z.string() }).describe("Account reference"),
+                ClassRef: z.object({ value: z.string() }).optional().describe("Class reference"),
+              })
+              .describe("Journal entry line details"),
+          })
+        )
+        .min(2)
+        .describe("Array of journal entry lines (must balance: at least one debit and one credit)"),
+    })
+    .passthrough()
+    .describe("JournalEntry object. Lines must balance (debits == credits)."),
 };
 
 const outputSchema = {

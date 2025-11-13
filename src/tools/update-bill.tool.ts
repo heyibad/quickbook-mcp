@@ -66,25 +66,28 @@ const toolDescription = `Update an existing bill in QuickBooks Online including 
 - Updated bill object with new SyncToken`;
 const inputSchema = {
     bill: z.object({
-        Id: z.string(),
+        Id: z.string().describe("Bill ID (required)"),
+        SyncToken: z.string().describe("Current SyncToken (required) - get from get-bill"),
         Line: z.array(
             z.object({
                 Amount: z.number(),
                 DetailType: z.string(),
-                Description: z.string(),
+                Description: z.string().optional(),
                 AccountRef: z.object({
                     value: z.string(),
                     name: z.string().optional(),
                 }),
             })
         ),
-        VendorRef: z.object({
-            value: z.string(),
-            name: z.string().optional(),
-        }),
-        DueDate: z.string(),
-        Balance: z.number(),
-        TotalAmt: z.number(),
+        VendorRef: z
+            .object({
+                value: z.string(),
+                name: z.string().optional(),
+            })
+            .optional(),
+        DueDate: z.string().optional(),
+        Balance: z.number().optional(),
+        TotalAmt: z.number().optional(),
     }),
 };
 

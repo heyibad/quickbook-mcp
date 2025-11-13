@@ -91,8 +91,27 @@ const toolDescription = `Update an existing product or service item in QuickBook
 - MetaData with LastUpdatedTime`;
 
 const inputSchema = {
-    item_id: z.string().min(1),
-    patch: z.record(z.any()),
+    item_id: z.string().min(1).describe("The QuickBooks ID of the item to update"),
+    sync_token: z.string().min(1).describe("Current version token from the item (required for concurrency control)"),
+    name: z.string().optional().describe("Item name"),
+    description: z.string().optional().describe("Item description"),
+    unit_price: z.number().optional().describe("Sales price per unit"),
+    purchase_cost: z.number().optional().describe("Cost to purchase the item"),
+    qty_on_hand: z.number().optional().describe("Quantity on hand (for Inventory items only)"),
+    active: z.boolean().optional().describe("Whether the item is active (true) or inactive (false)"),
+    income_account_ref: z.object({
+        value: z.string().describe("QuickBooks ID of the income account"),
+        name: z.string().optional()
+    }).optional().describe("Income account reference"),
+    expense_account_ref: z.object({
+        value: z.string().describe("QuickBooks ID of the expense account"),
+        name: z.string().optional()
+    }).optional().describe("Expense/COGS account reference"),
+    asset_account_ref: z.object({
+        value: z.string().describe("QuickBooks ID of the asset account"),
+        name: z.string().optional()
+    }).optional().describe("Asset account reference (for Inventory items)"),
+    taxable: z.boolean().optional().describe("Whether the item is taxable"),
 };
 
 const outputSchema = {

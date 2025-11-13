@@ -137,7 +137,32 @@ const toolDescription = `Create a purchase transaction in QuickBooks Online to r
 
 // Define the expected input schema for creating a purchase
 const inputSchema = {
-    purchase: z.any(),
+  purchase: z
+    .object({
+      AccountRef: z.object({ value: z.string() }).describe("Payment account reference (required)"),
+      PaymentType: z.string().describe("Payment type: Cash, Check, or CreditCard"),
+      EntityRef: z.object({ value: z.string(), type: z.string().optional() }).optional().describe("Vendor or customer reference"),
+      DocNumber: z.string().optional().describe("Check or reference number"),
+      TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
+      Line: z
+        .array(
+          z.object({
+            DetailType: z.string().describe("Detail type, e.g., AccountBasedExpenseLineDetail"),
+            Amount: z.number().describe("Line amount"),
+            Description: z.string().optional(),
+            AccountBasedExpenseLineDetail: z
+              .object({
+                AccountRef: z.object({ value: z.string() }).describe("Expense account reference"),
+                CustomerRef: z.object({ value: z.string() }).optional().describe("Optional customer for billable expenses"),
+              })
+              .optional(),
+          })
+        )
+        .min(1)
+        .describe("Array of expense line items"),
+    })
+    .passthrough()
+    .describe("Purchase object to create. AccountRef, PaymentType, and at least one Line are recommended."),
 };
 
 const outputSchema = {

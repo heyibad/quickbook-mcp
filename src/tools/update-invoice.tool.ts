@@ -38,12 +38,17 @@ const toolDescription = `Update an existing invoice in QuickBooks Online to modi
 - SalesTermRef: Payment terms reference
 - CustomField: Custom field values
 
-**Important:**
-- Always get current SyncToken before updating
-- Cannot change CustomerRef after invoice creation
-- Include complete Line array when updating line items
-- Use sparse=true for partial field updates
-- Cannot update paid or voided invoices without restrictions
+**CRITICAL - Required Workflow:**
+- Step 1: Call read_invoice with the invoice ID to get current SyncToken
+- Step 2: Call this tool with the invoice_id, current SyncToken, and fields to update
+- SyncToken Format: String like "0", "1", "2" - increments with each update
+- Why: SyncToken prevents concurrent modification conflicts in QuickBooks
+
+**Important Limitations:**
+- Cannot change CustomerRef after invoice is created
+- Include complete Line array when modifying line items (partial line updates not supported)
+- Cannot update paid or voided invoices in most cases
+- Use sparse=true for updating individual non-line fields
 
 **Example usage:**
 1. Update due date:
@@ -106,8 +111,44 @@ const toolDescription = `Update an existing invoice in QuickBooks Online to modi
 - Balance reflecting any payments`;
 
 const inputSchema = {
-    invoice_id: z.string().min(1).describe("The ID of the invoice to update"),
-    patch: z.record(z.any()).describe("Object containing fields to update"),
+    invoice_id: z.string().min(1).describe("The QuickBooks ID of the invoice to update"),
+    sync_token: z.string().min(1).describe("Current version token from the invoice (required for concurrency control)"),
+    due_date: z.string().optional().describe("Payment due date in YYYY-MM-DD format"),
+    txn_date: z.string().optional().describe("Transaction date in YYYY-MM-DD format"),
+    customer_memo: z.string().optional().describe("Message to customer on the invoice"),
+    private_note: z.string().optional().describe("Internal notes not visible to customer"),
+    bill_addr: z.object({
+        Line1: z.string().optional(),
+        Line2: z.string().optional(),
+        City: z.string().optional(),
+        CountrySubDivisionCode: z.string().optional(),
+        PostalCode: z.string().optional(),
+        Country: z.string().optional()
+    }).optional().describe("Billing address"),
+    ship_addr: z.object({
+        Line1: z.string().optional(),
+        Line2: z.string().optional(),
+        City: z.string().optional(),
+        CountrySubDivisionCode: z.string().optional(),
+        PostalCode: z.string().optional(),
+        Country: z.string().optional()
+    }).optional().describe("Shipping address"),
+    sales_term_ref: z.object({
+        value: z.string().describe("Payment terms ID")
+    }).optional().describe("Payment terms reference"),
+    line: z.array(z.object({
+        Id: z.string().optional().describe("Line ID for updating existing lines"),
+        DetailType: z.string().describe("Line detail type (usually SalesItemLineDetail)"),
+        Amount: z.number().optional().describe("Line total amount"),
+        Description: z.string().optional().describe("Line description"),
+        SalesItemLineDetail: z.object({
+            ItemRef: z.object({
+                value: z.string().describe("QuickBooks item ID")
+            }).describe("Item reference"),
+            Qty: z.number().optional().describe("Quantity"),
+            UnitPrice: z.number().optional().describe("Price per unit")
+        }).optional()
+    })).optional().describe("Array of invoice line items (include complete array when updating)"),
 };
 
 const outputSchema = {

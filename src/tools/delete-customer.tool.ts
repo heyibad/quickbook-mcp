@@ -59,7 +59,7 @@ const toolDescription = `Mark a customer as inactive in QuickBooks Online. Note:
 const inputSchema = {
     idOrEntity: z
         .any()
-        .describe("Customer ID (string) or customer entity object to delete"),
+        .describe("Customer ID as string (e.g., '58') OR customer object with {Id, SyncToken}. String is simpler - tool fetches SyncToken automatically."),
 };
 
 const outputSchema = {

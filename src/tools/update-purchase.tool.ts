@@ -104,7 +104,37 @@ const toolDescription = `Update an existing purchase transaction in QuickBooks O
 
 // Define the expected input schema for updating a purchase
 const inputSchema = {
-    purchase: z.any(),
+    purchase: z.object({
+        Id: z.string().min(1).describe("The QuickBooks ID of the purchase to update"),
+        SyncToken: z.string().min(1).describe("Current version token from the purchase (required for concurrency control)"),
+        sparse: z.boolean().optional().describe("Set to true for partial updates (recommended)"),
+        TxnDate: z.string().optional().describe("Transaction date in YYYY-MM-DD format"),
+        DocNumber: z.string().optional().describe("Check number or reference number"),
+        PrivateNote: z.string().optional().describe("Internal notes or memo"),
+        EntityRef: z.object({
+            value: z.string().describe("Vendor or customer ID"),
+            type: z.string().optional()
+        }).optional().describe("Vendor or customer reference"),
+        Line: z.array(z.object({
+            Id: z.string().optional().describe("Line ID for updating existing lines"),
+            DetailType: z.string().describe("Line detail type (e.g., AccountBasedExpenseLineDetail, ItemBasedExpenseLineDetail)"),
+            Amount: z.number().positive().describe("Line amount"),
+            Description: z.string().optional().describe("Line description"),
+            AccountBasedExpenseLineDetail: z.object({
+                AccountRef: z.object({
+                    value: z.string().describe("QuickBooks account ID")
+                }).describe("Expense account reference")
+            }).optional(),
+            ItemBasedExpenseLineDetail: z.object({
+                ItemRef: z.object({
+                    value: z.string().describe("QuickBooks item ID")
+                }).describe("Item reference"),
+                Qty: z.number().optional(),
+                UnitPrice: z.number().optional()
+            }).optional()
+        })).optional().describe("Array of expense line items"),
+        TotalAmt: z.number().optional().describe("Total amount (must equal sum of line amounts)")
+    }).passthrough().describe("Purchase object with fields to update"),
 };
 
 const outputSchema = {

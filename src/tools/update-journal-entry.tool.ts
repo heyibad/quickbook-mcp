@@ -124,7 +124,27 @@ const toolDescription = `Update an existing journal entry in QuickBooks Online t
 
 // Define the expected input schema for updating a journal entry
 const inputSchema = {
-    journalEntry: z.any(),
+    journalEntry: z.object({
+        Id: z.string().min(1).describe("The QuickBooks ID of the journal entry to update"),
+        SyncToken: z.string().min(1).describe("Current version token from the journal entry (required for concurrency control)"),
+        sparse: z.boolean().optional().describe("Set to true for partial updates (recommended)"),
+        TxnDate: z.string().optional().describe("Transaction date in YYYY-MM-DD format"),
+        PrivateNote: z.string().optional().describe("Internal description or memo"),
+        DocNumber: z.string().optional().describe("Journal entry number"),
+        Adjustment: z.boolean().optional().describe("Whether this is an adjustment entry"),
+        Line: z.array(z.object({
+            Id: z.string().optional().describe("Line ID for updating existing lines"),
+            DetailType: z.literal("JournalEntryLineDetail"),
+            Amount: z.number().positive().describe("Line amount (always positive)"),
+            Description: z.string().optional().describe("Line description"),
+            JournalEntryLineDetail: z.object({
+                PostingType: z.enum(["Debit", "Credit"]).describe("Whether this line is a debit or credit"),
+                AccountRef: z.object({
+                    value: z.string().describe("QuickBooks account ID")
+                }).describe("Account reference")
+            })
+        })).min(2).optional().describe("Array of journal entry lines (must have at least 2 lines, debits must equal credits)")
+    }).passthrough().describe("Journal entry object with fields to update"),
 };
 
 const outputSchema = {

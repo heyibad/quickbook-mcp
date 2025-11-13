@@ -99,7 +99,31 @@ const toolDescription = `Update an existing employee record in QuickBooks Online
 
 // Define the expected input schema for updating an employee
 const inputSchema = {
-    employee: z.any(),
+  employee: z
+    .object({
+      Id: z.string().describe("Employee ID (required) - get from get_employee"),
+      SyncToken: z.string().describe("Current SyncToken (required) - get from get_employee"),
+      sparse: z.boolean().optional().describe("Set to true for partial updates"),
+      GivenName: z.string().optional(),
+      FamilyName: z.string().optional(),
+      DisplayName: z.string().optional(),
+      PrimaryEmailAddr: z.object({ Address: z.string() }).optional(),
+      PrimaryPhone: z.object({ FreeFormNumber: z.string() }).optional(),
+      Mobile: z.object({ FreeFormNumber: z.string() }).optional(),
+      EmployeeNumber: z.string().optional(),
+      BillableTime: z.boolean().optional(),
+      BillRate: z.number().optional(),
+      HiredDate: z.string().optional(),
+      ReleasedDate: z.string().optional(),
+      PrimaryAddr: z.object({
+        Line1: z.string().optional(),
+        City: z.string().optional(),
+        CountrySubDivisionCode: z.string().optional(),
+        PostalCode: z.string().optional(),
+      }).optional(),
+    })
+    .passthrough()
+    .describe("Employee update object: include Id and SyncToken; other fields are optional and will be applied."),
 };
 
 const outputSchema = {

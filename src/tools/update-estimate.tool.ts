@@ -102,7 +102,19 @@ const toolDescription = `Update an existing sales estimate in QuickBooks Online 
 - All estimate details with changes applied
 - MetaData with LastUpdatedTime`;
 const inputSchema = {
-    estimate: z.any().describe("Estimate object with updated fields"),
+  estimate: z
+    .object({
+      Id: z.string().describe("Estimate ID (required)"),
+      SyncToken: z.string().describe("Current SyncToken (required) - get from get_estimate"),
+      sparse: z.boolean().optional().describe("Set to true for partial updates"),
+      Line: z.array(z.any()).optional().describe("Line array for estimate updates"),
+      TxnDate: z.string().optional(),
+      ExpirationDate: z.string().optional(),
+      TxnStatus: z.string().optional(),
+      CustomerMemo: z.object({ value: z.string() }).optional(),
+    })
+    .passthrough()
+    .describe("Estimate update object: include Id and SyncToken and fields to update."),
 };
 
 const outputSchema = {

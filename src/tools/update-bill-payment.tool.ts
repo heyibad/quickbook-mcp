@@ -88,7 +88,22 @@ const toolDescription = `Update an existing bill payment in QuickBooks Online to
 
 // Define the expected input schema for updating a bill payment
 const inputSchema = {
-    billPayment: z.any(),
+    billPayment: z.object({
+        Id: z.string().min(1).describe("The QuickBooks ID of the bill payment to update"),
+        SyncToken: z.string().min(1).describe("Current version token from the bill payment (required for concurrency control)"),
+        sparse: z.boolean().optional().describe("Set to true for partial updates (recommended)"),
+        TxnDate: z.string().optional().describe("Payment date in YYYY-MM-DD format"),
+        PrivateNote: z.string().optional().describe("Internal notes or memo"),
+        CheckNum: z.string().optional().describe("Check number (for check payments)"),
+        Line: z.array(z.object({
+            Amount: z.number().positive().describe("Amount applied to this bill"),
+            LinkedTxn: z.array(z.object({
+                TxnId: z.string().describe("Bill ID being paid"),
+                TxnType: z.literal("Bill")
+            })).describe("Array of bills being paid by this line")
+        })).optional().describe("Array of payment lines linking to bills"),
+        TotalAmt: z.number().optional().describe("Total payment amount (must equal sum of line amounts)")
+    }).passthrough().describe("Bill payment object with fields to update"),
 };
 
 const outputSchema = {

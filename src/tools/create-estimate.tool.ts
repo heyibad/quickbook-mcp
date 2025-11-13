@@ -124,7 +124,37 @@ const toolDescription = `Create a sales estimate (quote) in QuickBooks Online to
 - TxnStatus set to "Pending" by default
 - MetaData with creation timestamp
 - SyncToken for future updates`;
-const inputSchema = { estimate: z.any().describe("Estimate object to create") };
+const inputSchema = {
+  estimate: z
+    .object({
+      CustomerRef: z.object({ value: z.string() }).describe("Customer reference (required)"),
+      Line: z
+        .array(
+          z.object({
+            DetailType: z.string().describe("Detail type, e.g., SalesItemLineDetail"),
+            Amount: z.number().describe("Line total amount"),
+            Description: z.string().optional(),
+            SalesItemLineDetail: z
+              .object({
+                ItemRef: z.object({ value: z.string() }).describe("Item reference"),
+                Qty: z.number().optional(),
+                UnitPrice: z.number().optional(),
+              })
+              .optional(),
+          })
+        )
+        .min(1)
+        .describe("Array of line items (at least one)"),
+      TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
+      ExpirationDate: z.string().optional().describe("Expiration date (YYYY-MM-DD)"),
+      DocNumber: z.string().optional().describe("Estimate number"),
+      PrivateNote: z.string().optional().describe("Internal note"),
+      CustomerMemo: z.object({ value: z.string() }).optional().describe("Message to customer"),
+      TxnStatus: z.string().optional().describe("Transaction status - Pending/Accepted/Closed/Rejected"),
+    })
+    .passthrough()
+    .describe("Estimate object to create. Provide CustomerRef and Line items at minimum."),
+};
 
 const outputSchema = {
     success: z.boolean().describe("Whether the operation was successful"),

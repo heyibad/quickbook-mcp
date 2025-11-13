@@ -97,7 +97,38 @@ const toolDescription = `Create a new employee record in QuickBooks Online. This
 
 // Define the expected input schema for creating an employee
 const inputSchema = {
-    employee: z.any(),
+    employee: z
+        .object({
+            GivenName: z.string().describe("Employee first name (REQUIRED)"),
+            FamilyName: z.string().describe("Employee last name (REQUIRED)"),
+            DisplayName: z.string().optional().describe("Display name in QuickBooks"),
+            PrimaryEmailAddr: z
+                .object({ Address: z.string() })
+                .optional()
+                .describe("Primary email address"),
+            PrimaryPhone: z
+                .object({ FreeFormNumber: z.string() })
+                .optional()
+                .describe("Primary phone number"),
+            Mobile: z.object({ FreeFormNumber: z.string() }).optional().describe("Mobile phone number"),
+            EmployeeNumber: z.string().optional().describe("Company employee identifier"),
+            BillableTime: z.boolean().optional().describe("Whether employee time is billable"),
+            BillRate: z.number().optional().describe("Hourly billing rate"),
+            HiredDate: z.string().optional().describe("Hire date (YYYY-MM-DD)"),
+            ReleasedDate: z.string().optional().describe("Release/termination date (YYYY-MM-DD)"),
+            SSN: z.string().optional().describe("Social Security Number (or equivalent) - handle securely"),
+            PrimaryAddr: z
+                .object({
+                    Line1: z.string().optional(),
+                    City: z.string().optional(),
+                    CountrySubDivisionCode: z.string().optional(),
+                    PostalCode: z.string().optional(),
+                })
+                .optional()
+                .describe("Primary address"),
+        })
+        .passthrough()
+        .describe("Employee object (GivenName and FamilyName are recommended). Extra QuickBooks fields are allowed and will be passed through."),
 };
 
 const outputSchema = {
