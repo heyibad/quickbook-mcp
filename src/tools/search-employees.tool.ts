@@ -111,8 +111,18 @@ See SEARCH_TOOLS_USAGE_GUIDE.md for detailed examples.
 - Employment dates and employee numbers`;
 
 // Define the expected input schema for searching employees
+// Keep as a Zod raw shape (plain object of Zod types) so it matches ToolDefinition<TInput>
 const inputSchema = {
-    criteria: z.array(z.any()).optional(),
+    // criteria is an array of filter objects with a defined item schema so JSON Schema 'items' is generated
+    criteria: z
+        .array(
+            z.object({
+                field: z.string().optional(),
+                value: z.any().optional(),
+                operator: z.string().optional(),
+            })
+        )
+        .optional(),
     asc: z.string().optional(),
     desc: z.string().optional(),
     limit: z.number().optional(),
