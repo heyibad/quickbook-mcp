@@ -102,28 +102,19 @@ const toolDescription = `Update an existing sales estimate in QuickBooks Online 
 - All estimate details with changes applied
 - MetaData with LastUpdatedTime`;
 
-// Define Line item schema separately to ensure proper JSON Schema generation
-const LineItemSchema = z.object({
-  Id: z.string().optional().describe("Line ID for existing lines"),
-  DetailType: z.string().describe("Line detail type (e.g., SalesItemLineDetail)"),
-  Amount: z.number().optional().describe("Line total amount"),
-  Description: z.string().optional().describe("Line description"),
-});
-
 const inputSchema = {
   estimate: z
     .object({
       Id: z.string().describe("Estimate ID (required)"),
       SyncToken: z.string().describe("Current SyncToken (required) - get from get_estimate"),
       sparse: z.boolean().optional().describe("Set to true for partial updates"),
-      Line: z.array(LineItemSchema).optional().describe("Line items array - include all lines you want to keep"),
       TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
       ExpirationDate: z.string().optional().describe("Quote expiration date (YYYY-MM-DD)"),
       TxnStatus: z.enum(["Pending", "Accepted", "Closed", "Rejected"]).optional().describe("Estimate status"),
       CustomerMemo: z.object({ value: z.string() }).optional().describe("Message to customer"),
     })
     .passthrough()
-    .describe("Estimate update object: include Id and SyncToken and fields to update."),
+    .describe("Estimate update object. Include Id, SyncToken, and fields to update. For Line items, pass as array in the object."),
 };
 
 const outputSchema = {
