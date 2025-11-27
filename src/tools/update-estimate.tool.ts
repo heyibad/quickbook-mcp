@@ -101,25 +101,22 @@ const toolDescription = `Update an existing sales estimate in QuickBooks Online 
 - New SyncToken for subsequent updates
 - All estimate details with changes applied
 - MetaData with LastUpdatedTime`;
+
+// Define Line item schema separately to ensure proper JSON Schema generation
+const LineItemSchema = z.object({
+  Id: z.string().optional().describe("Line ID for existing lines"),
+  DetailType: z.string().describe("Line detail type (e.g., SalesItemLineDetail)"),
+  Amount: z.number().optional().describe("Line total amount"),
+  Description: z.string().optional().describe("Line description"),
+});
+
 const inputSchema = {
   estimate: z
     .object({
       Id: z.string().describe("Estimate ID (required)"),
       SyncToken: z.string().describe("Current SyncToken (required) - get from get_estimate"),
       sparse: z.boolean().optional().describe("Set to true for partial updates"),
-      Line: z.array(z.object({
-        Id: z.string().optional().describe("Line ID for existing lines"),
-        DetailType: z.string().describe("Line detail type (e.g., SalesItemLineDetail)"),
-        Amount: z.number().optional().describe("Line total amount"),
-        Description: z.string().optional().describe("Line description"),
-        SalesItemLineDetail: z.object({
-          ItemRef: z.object({
-            value: z.string().describe("QuickBooks item ID")
-          }).describe("Item reference"),
-          Qty: z.number().optional().describe("Quantity"),
-          UnitPrice: z.number().optional().describe("Price per unit")
-        }).optional()
-      })).optional().describe("Line items array - include all lines you want to keep"),
+      Line: z.array(LineItemSchema).optional().describe("Line items array - include all lines you want to keep"),
       TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
       ExpirationDate: z.string().optional().describe("Quote expiration date (YYYY-MM-DD)"),
       TxnStatus: z.enum(["Pending", "Accepted", "Closed", "Rejected"]).optional().describe("Estimate status"),
