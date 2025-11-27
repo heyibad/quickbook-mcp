@@ -28,7 +28,7 @@ import { UpdateCustomerTool } from "./tools/update-customer.tool.js";
 import { DeleteCustomerTool } from "./tools/delete-customer.tool.js";
 import { CreateEstimateTool } from "./tools/create-estimate.tool.js";
 import { GetEstimateTool } from "./tools/get-estimate.tool.js";
-// import { UpdateEstimateTool } from "./tools/update-estimate.tool.js"; // Removed due to schema issues
+import { UpdateEstimateTool } from "./tools/update-estimate.tool.js";
 import { DeleteEstimateTool } from "./tools/delete-estimate.tool.js";
 import { SearchCustomersTool } from "./tools/search-customers.tool.js";
 import { SearchEstimatesTool } from "./tools/search-estimates.tool.js";
@@ -87,7 +87,7 @@ const main = async () => {
     // Add tools for estimates
     RegisterTool(server, CreateEstimateTool);
     RegisterTool(server, GetEstimateTool);
-    // RegisterTool(server, UpdateEstimateTool); // Removed due to schema issues
+    RegisterTool(server, UpdateEstimateTool);
     RegisterTool(server, DeleteEstimateTool);
     RegisterTool(server, SearchEstimatesTool);
 
@@ -166,15 +166,23 @@ const main = async () => {
 
     // Create Express app to handle HTTP requests
     const app = express();
-    
+
     // Enable CORS for all origins (customize as needed)
-    app.use(cors({
-        origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-        credentials: true
-    }));
-    
+    app.use(
+        cors({
+            origin: process.env.ALLOWED_ORIGINS
+                ? process.env.ALLOWED_ORIGINS.split(",")
+                : "*",
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allowedHeaders: [
+                "Content-Type",
+                "Authorization",
+                "X-Requested-With",
+            ],
+            credentials: true,
+        })
+    );
+
     app.use(express.json());
 
     // Handle POST/GET/DELETE requests for Streamable HTTP transport
