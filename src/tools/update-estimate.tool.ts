@@ -107,11 +107,23 @@ const inputSchema = {
       Id: z.string().describe("Estimate ID (required)"),
       SyncToken: z.string().describe("Current SyncToken (required) - get from get_estimate"),
       sparse: z.boolean().optional().describe("Set to true for partial updates"),
-      Line: z.array(z.any()).optional().describe("Line array for estimate updates"),
-      TxnDate: z.string().optional(),
-      ExpirationDate: z.string().optional(),
-      TxnStatus: z.string().optional(),
-      CustomerMemo: z.object({ value: z.string() }).optional(),
+      Line: z.array(z.object({
+        Id: z.string().optional().describe("Line ID for existing lines"),
+        DetailType: z.string().describe("Line detail type (e.g., SalesItemLineDetail)"),
+        Amount: z.number().optional().describe("Line total amount"),
+        Description: z.string().optional().describe("Line description"),
+        SalesItemLineDetail: z.object({
+          ItemRef: z.object({
+            value: z.string().describe("QuickBooks item ID")
+          }).describe("Item reference"),
+          Qty: z.number().optional().describe("Quantity"),
+          UnitPrice: z.number().optional().describe("Price per unit")
+        }).optional()
+      })).optional().describe("Line items array - include all lines you want to keep"),
+      TxnDate: z.string().optional().describe("Transaction date (YYYY-MM-DD)"),
+      ExpirationDate: z.string().optional().describe("Quote expiration date (YYYY-MM-DD)"),
+      TxnStatus: z.enum(["Pending", "Accepted", "Closed", "Rejected"]).optional().describe("Estimate status"),
+      CustomerMemo: z.object({ value: z.string() }).optional().describe("Message to customer"),
     })
     .passthrough()
     .describe("Estimate update object: include Id and SyncToken and fields to update."),
