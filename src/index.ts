@@ -28,7 +28,7 @@ import { UpdateCustomerTool } from "./tools/update-customer.tool.js";
 import { DeleteCustomerTool } from "./tools/delete-customer.tool.js";
 import { CreateEstimateTool } from "./tools/create-estimate.tool.js";
 import { GetEstimateTool } from "./tools/get-estimate.tool.js";
-import { UpdateEstimateTool } from "./tools/update-estimate.tool.js";
+// import { UpdateEstimateTool } from "./tools/update-estimate.tool.js"; // Removed due to schema issues
 import { DeleteEstimateTool } from "./tools/delete-estimate.tool.js";
 import { SearchCustomersTool } from "./tools/search-customers.tool.js";
 import { SearchEstimatesTool } from "./tools/search-estimates.tool.js";
@@ -87,7 +87,7 @@ const main = async () => {
     // Add tools for estimates
     RegisterTool(server, CreateEstimateTool);
     RegisterTool(server, GetEstimateTool);
-    RegisterTool(server, UpdateEstimateTool);
+    // RegisterTool(server, UpdateEstimateTool); // Removed due to schema issues
     RegisterTool(server, DeleteEstimateTool);
     RegisterTool(server, SearchEstimatesTool);
 
